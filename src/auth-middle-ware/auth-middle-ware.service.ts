@@ -4,10 +4,13 @@ import { UserMetadata } from 'firebase-admin/lib/auth/user-record';
 import * as fs from 'fs';
 import { type } from 'os';
 import * as path from 'path';
+
+
 const { getAppCheck } = require("firebase-admin/app-check");
 
 console.log(__dirname)
-const pathxx = __dirname + "/../../config"
+
+const pathxx = __dirname +'./../../src/config/'
 const filePath = path.join(pathxx,'serviceAccountKey.json');
 const jsonData = fs.readFileSync(filePath, 'utf8');
 const data = JSON.parse(jsonData);
