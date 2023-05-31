@@ -22,7 +22,7 @@ export class serviceEntity {
     service_status: number;
     
     // FK 
-    @ManyToOne(() => providerEntity , {eager : true})
+    @ManyToOne(() => providerEntity , {eager : true , cascade : true , onDelete : "CASCADE" })
     @JoinColumn({ name: 'provider_code' })
     provider_code: string;
 

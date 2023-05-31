@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post ,Put, Delete } from '@nestjs/common';
 import { AppAuthService } from './app-auth.service';
 import { app_auth } from 'src/entity/app-auth.Entity';
 import { AppAuthDTO } from 'src/dto/app-auth.dto';
@@ -27,15 +27,21 @@ export class AppAuthController {
             console.log('input out of range app_status')
             return app ; 
         }
-        
-      
     }
 
     @Get("/getAlltest")
     async getAll() : Promise<app_auth[]> {
-        console.log("recived get request")
         return this.appAuthService.findAll() ; 
     }
 
+    @Put("/updateById")
+    async updateAuthById( @Body() app_auth:app_auth) : Promise<app_auth> {
+        return await this.appAuthService.updateById(app_auth) ; 
+    }
+
+    @Delete("/deleteById")
+    async deleteAuthById( @Body() app_id : string) : Promise<string> {
+        return await this.appAuthService.deleteById(app_id) ; 
+    }
 
 }

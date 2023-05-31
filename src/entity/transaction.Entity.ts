@@ -9,7 +9,7 @@ export class transactionEntity {
     @PrimaryColumn({ length: 20, type: 'character varying', nullable: false })
     ref_id: string;
 
-    @ManyToOne(() => app_auth, { eager: true })
+    @ManyToOne(() => app_auth, { eager: true , cascade : true , onDelete : "CASCADE" })
     @JoinColumn({ name: 'app_id' })
     app_id: string;
 
@@ -18,7 +18,7 @@ export class transactionEntity {
     @Column({ type: 'smallint', nullable: false })
     txn_status: number;
 
-    @ManyToOne(() => serviceEntity, { eager: true })
+    @ManyToOne(() => serviceEntity, { eager: true , cascade : true , onDelete : "CASCADE" })
     @JoinColumn({ name: 'serivce_id' })
     serivce_id: number ; 
 
