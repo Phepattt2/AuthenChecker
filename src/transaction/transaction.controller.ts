@@ -19,20 +19,25 @@ export class TransactionController {
 
     async createProvider(@Body() newTransaction: transactionDTO): Promise<transactionEntity> {
 
-        const addTransaction = new transactionEntity();
+        if (newTransaction.editable_amount >= 0 && newTransaction.editable_amount <= 1) {
+            const addTransaction = new transactionEntity();
 
-        addTransaction.ref_id = gen_ref_id() ; 
-        addTransaction.app_id = newTransaction.app_id ; 
-        addTransaction.txn_status = newTransaction.txn_status ; 
-        addTransaction.serivce_id = newTransaction.service_id ; 
-        addTransaction.reference1 = newTransaction.reference1 ; 
-        addTransaction.device_type = newTransaction.device_type ;
-        addTransaction.device_id = newTransaction.device_id ;
-        addTransaction.editable_amount = newTransaction.editable_amount ;
+            addTransaction.ref_id = gen_ref_id() ; 
+            addTransaction.app_id = newTransaction.app_id ; 
+            addTransaction.txn_status = newTransaction.txn_status ; 
+            addTransaction.serivce_id = newTransaction.service_id ; 
+            addTransaction.reference1 = newTransaction.reference1 ; 
+            addTransaction.device_type = newTransaction.device_type ;
+            addTransaction.device_id = newTransaction.device_id ;
+            addTransaction.editable_amount = newTransaction.editable_amount ;
+            
+            addTransaction.created_at = new Date()  ;
+         
+            return this.transactionService.insertTransaction(addTransaction);
+        } else {
+            return null ;
+        }
         
-        addTransaction.created_at = new Date()  ;
-     
-        return this.transactionService.insertTransaction(addTransaction);
     }
 
 }

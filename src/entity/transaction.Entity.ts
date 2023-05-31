@@ -68,7 +68,7 @@ export class transactionEntity {
     @Column({ type: 'integer', nullable: true })
     fee: number;
 
-    @Column({ type: 'smallint', nullable: false })
+    @Column({ type: 'smallint', nullable: false , default : 0})
     editable_amount: number;
 
     @Index('transaction_created_at_index')
