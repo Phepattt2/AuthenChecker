@@ -17,16 +17,19 @@ import { ProviderModule } from './provider/provider.module';
 import { ProviderService } from './provider/provider.service';
 import { providerEntity } from './entity/provider.Entity';
 import { ServiceModule } from './service/service.module';
+import { ServiceController } from './service/service.controller';
+import { ServiceService } from './service/service.service';
+import { serviceEntity } from './entity/service.Entity';
 
 
 @Module({
   imports: [ AuthMiddleWareModule , 
               TypeOrmModule.forRoot(typrOrmConfig) ,
-              TypeOrmModule.forFeature([testEntity,app_auth,providerEntity]),
-              ServiceModule,
+              TypeOrmModule.forFeature([testEntity,app_auth,providerEntity , serviceEntity]),
+              
             ],
-  controllers: [AppController,TestEntityController,AppAuthController, ProviderController ],
-  providers: [AppService,TestEntityService, AppAuthService , ProviderService],
+  controllers: [AppController,TestEntityController,AppAuthController, ProviderController ,ServiceController ],
+  providers: [AppService,TestEntityService, AppAuthService , ProviderService , ServiceService],
   
 })
 export class AppModule {}
