@@ -21,8 +21,8 @@ export class AppAuthController {
         
         app.app_name = newAppEntity.app_name ; 
         app.app_status = newAppEntity.app_status ; 
-        app.created_at = newAppEntity.created_at ; 
-        app.updated_at = newAppEntity.updated_at ; 
+        app.created_at = new Date() ; 
+        app.updated_at = new Date() ;
       
         return await this.appAuthService.createAppAuth(app) ; 
     }

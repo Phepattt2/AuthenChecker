@@ -3,6 +3,7 @@ import { app_auth } from "src/entity/app-auth.Entity";
 import { providerEntity } from "src/entity/provider.Entity";
 import { serviceEntity } from "src/entity/service.Entity";
 import { testEntity } from "src/entity/test.Entity";
+import { transactionEntity } from "src/entity/transaction.Entity";
 
 
 export const typrOrmConfig: TypeOrmModuleOptions = {
@@ -12,7 +13,7 @@ export const typrOrmConfig: TypeOrmModuleOptions = {
         username: 'postgres',
         password: 'Piito#1911',
         database: 'temp1',
-        entities: [testEntity ,app_auth ,providerEntity , serviceEntity ],   
+        entities: [testEntity ,app_auth ,providerEntity , serviceEntity, transactionEntity ],   
         synchronize: true,
 }               
 

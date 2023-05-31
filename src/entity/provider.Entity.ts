@@ -6,7 +6,7 @@ export class  providerEntity {
     provider_code : string ;
     @Column({  type : 'text' , nullable : false})
     provider_name : string ; 
-    @CreateDateColumn({ nullable : false})
+    @CreateDateColumn({ nullable : false , type : 'timestamp with time zone'})
     created_at : Date ; 
 
 }

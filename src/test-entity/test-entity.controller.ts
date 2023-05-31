@@ -21,7 +21,7 @@ export class TestEntityController {
     
     async getAll() : Promise<testEntity[]> {
         console.log("recived get request")
-        return this.testEntityService.findAll() ; 
+        return await this.testEntityService.findAll() ; 
     }
 
 
