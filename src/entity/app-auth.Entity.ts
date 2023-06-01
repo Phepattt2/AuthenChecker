@@ -2,7 +2,7 @@ import { randomUUID, randomBytes } from 'crypto';
 // gen UUID , randomByte then encrypt to base64 /
 import {Column, CreateDateColumn, Entity, PrimaryColumn, PrimaryGeneratedColumn} from 'typeorm'  ;
 
-@Entity()
+@Entity('app_auth')
 export class app_auth {
     // backend generated 
     @PrimaryColumn({ type: 'uuid' })

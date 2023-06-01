@@ -12,10 +12,6 @@ export class AppAuthService {
     ) { }
 
     async createAppAuth(appAuth: app_auth): Promise<app_auth> {
-        console.log(typeof (appAuth))
-        console.log(appAuth.app_id)
-        console.log(appAuth.app_secret)
-        console.log('service side : ', appAuth)
         return this.appAuthRepository.save(appAuth);
     }
 

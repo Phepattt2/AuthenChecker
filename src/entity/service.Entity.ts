@@ -3,8 +3,8 @@ import { providerEntity } from "./provider.Entity";
 
 @Entity('service')
 export class serviceEntity {
-    @PrimaryColumn()
-    service_id: string;
+    @PrimaryColumn({type:'integer'})
+    service_id: number;
   
     @Column({ type: 'character varying', length: 30, unique: true , nullable : false })
     service_code: string;

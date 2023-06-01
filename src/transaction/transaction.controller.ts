@@ -7,8 +7,6 @@ import { transactionDTO } from 'src/dto/transaction.dto';
 export class TransactionController {
     constructor(private readonly transactionService : TransactionService) { }
 
-   
-
     @Get('/getAllTransactions')
     async getAllTransaction(): Promise<transactionEntity[]> {
         return await this.transactionService.findAll();
@@ -19,24 +17,22 @@ export class TransactionController {
 
     async createProvider(@Body() newTransaction: transactionDTO): Promise<transactionEntity> {
 
-        if (newTransaction.editable_amount >= 0 && newTransaction.editable_amount <= 1) {
+        
             const addTransaction = new transactionEntity();
 
-            addTransaction.ref_id = gen_ref_id() ; 
+            // addTransaction.ref_id = gen_ref_id() ; 
             addTransaction.app_id = newTransaction.app_id ; 
             addTransaction.txn_status = newTransaction.txn_status ; 
-            addTransaction.serivce_id = newTransaction.service_id ; 
+            addTransaction.service_id = newTransaction.service_id ; 
             addTransaction.reference1 = newTransaction.reference1 ; 
             addTransaction.device_type = newTransaction.device_type ;
             addTransaction.device_id = newTransaction.device_id ;
-            addTransaction.editable_amount = newTransaction.editable_amount ;
+            // addTransaction.editable_amount = newTransaction.editable_amount ;
             
             addTransaction.created_at = new Date()  ;
          
             return this.transactionService.insertTransaction(addTransaction);
-        } else {
-            return null ;
-        }
+        
         
     }
 

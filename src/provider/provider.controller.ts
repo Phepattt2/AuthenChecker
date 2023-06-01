@@ -7,7 +7,7 @@ import { providerDTO } from 'src/dto/provider.dto';
 export class ProviderController {
     constructor(private readonly providerService: ProviderService) { }
 
-    @Get('/getAllProv')
+    @Get('/getAllProvider')
     async getAllProvider(): Promise<providerEntity[]> {
         return this.providerService.findAll();
     }

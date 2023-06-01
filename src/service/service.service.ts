@@ -15,4 +15,8 @@ export class ServiceService {
         return await this.serviceRepository.save(service) ;
     } 
 
+    async findAll() : Promise<serviceEntity[]> {
+        return await this.serviceRepository.find() ;
+    } 
+
 }

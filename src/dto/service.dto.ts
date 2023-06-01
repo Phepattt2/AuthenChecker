@@ -1,7 +1,7 @@
 import { providerEntity } from "src/entity/provider.Entity";
 
 export class serviceDTO {
-    service_id: string;
+    service_id: number;
     
     service_code: string;
     
