@@ -4,7 +4,7 @@ import { transactionEntity } from 'src/entity/transaction.Entity';
 import { transactionDTO } from 'src/dto/transaction.dto';
 import { Request, Response } from 'express';
 
-const excludedKey = ['created_at', 'ref_id', 'paid_at',];
+const excludedKey = ['created_at', 'ref_id', 'paid_at'];
 
 @Controller('transaction')
 export class TransactionController {
