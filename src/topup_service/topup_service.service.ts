@@ -13,16 +13,18 @@ export class TopupServiceService {
 
     async findAll(): Promise<topUpServiceEntity[]> {
         try {
-        return await this.topUpServiceRepository.find();
-        }catch(e){
-            console.log(e); 
-            return e ; 
+            return await this.topUpServiceRepository.find();
+        } catch (e) {
+            console.log(e);
+            return e;
         }
     }
 
     async insertTopUpService(topUpService: topUpServiceEntity): Promise<topUpServiceEntity> {
         try {
+
             return await this.topUpServiceRepository.save(topUpService);
+            
         } catch (e) {
             console.log('erorr : ', e)
             return e
@@ -31,33 +33,53 @@ export class TopupServiceService {
 
     async updateById(topUpService: topUpServiceEntity): Promise<topUpServiceEntity> {
         try {
+
             const found = await this.topUpServiceRepository.findOneBy({ 'service_id': topUpService.service_id })
+            
             if (found) {
-                found.topup_amount = topUpService.topup_amount ; 
-                found.updated_at = new Date() ;
+
+                found.topup_amount = topUpService.topup_amount;
+
+                found.updated_at = new Date();
 
                 return await this.topUpServiceRepository.save(found);
+
             } else {
+
                 console.log('error topUpService not fonud')
+
                 return topUpService;
+
             }
         } catch (e) {
+
             console.log('error : ', e)
+
             return topUpService;
+
         }
     }
 
-    async deleteById( service_id : number ): Promise<string> {
+    async deleteById(service_id: number): Promise<string> {
         try {
-            if ( await this.topUpServiceRepository.findOneBy({'service_id':service_id})){
+
+            if (await this.topUpServiceRepository.findOneBy({ 'service_id': service_id })) {
+
                 await this.topUpServiceRepository.delete(service_id);
+                
                 return "topUpService successfully deleted";
+            
             } else {
+             
                 return "topUpService failled"
+            
             }
         } catch (e) {
+
             console.log('error : ', e)
+
             return e;
+
         }
     }
 }

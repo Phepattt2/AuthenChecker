@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { transactionEntity } from 'src/entity/transaction.Entity';
 import { transactionRunnerEntity } from 'src/entity/transaction_runner.Entity';
 import { Repository } from 'typeorm';
+
+const excludedKey = ["runner_key"]
+
 
 @Injectable()
 export class TransactionRunnerService {
@@ -33,7 +37,8 @@ export class TransactionRunnerService {
         try {
             const found = await this.transactionRunnerRepository.findOneBy({ 'runner_key': transactionRunner.runner_key });
             if (found) {
-                found.runner_count = transactionRunner.runner_count;
+                const updatedFound = await initUpdater(excludedKey, transactionRunner, found);
+                updatedFound.runner_key = transactionRunner.runner_key
                 return await this.transactionRunnerRepository.save(found);
             } else {
                 console.log('error transaction_runner not found');
@@ -47,12 +52,12 @@ export class TransactionRunnerService {
 
     async deleteById(runner_key: string): Promise<string> {
         try {
-            if(await this.transactionRunnerRepository.findOneBy({'runner_key' : runner_key})) {
+            if (await this.transactionRunnerRepository.findOneBy({ 'runner_key': runner_key })) {
                 await this.transactionRunnerRepository.delete(runner_key);
                 return "transaction_runner successfully deleted";
-            }else {
+            } else {
                 return "transaction_runner failled "
-              }
+            }
         } catch (e) {
             console.log('error : ', e);
 
@@ -60,5 +65,18 @@ export class TransactionRunnerService {
         }
     }
 
+
+}
+
+
+async function initUpdater(notIncludeList: string[], inputEntity: transactionRunnerEntity, baseEntity: transactionRunnerEntity): Promise<transactionRunnerEntity> {
+
+    const exportedEntity = baseEntity;
+    for (var key in inputEntity) {
+        if (notIncludeList.includes(key) == false) {
+            exportedEntity[key] = inputEntity[key];
+        }
+    }
+    return exportedEntity
 
 }

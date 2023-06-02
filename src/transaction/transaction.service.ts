@@ -31,9 +31,12 @@ export class TransactionService {
         }
     }
 
-    async updateById(transaction: transactionEntity): Promise<transactionEntity> {
+    async updateById(transaction: transactionEntity): Promise<transactionEntity|null> {
         try {
-            const found = await this.transactionRepository.findOneBy({ 'ref_id': transaction.ref_id })
+            console.log(transaction)
+
+            console.log(transaction.ref_id)
+            const found = await this.transactionRepository.findOneById(transaction.ref_id)
             if (found) {
                 found.txn_status = transaction.txn_status
                 found.service_txn_id = transaction.service_txn_id

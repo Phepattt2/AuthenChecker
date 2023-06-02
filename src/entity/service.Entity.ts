@@ -1,11 +1,12 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import { providerEntity } from "./provider.Entity";
 
 @Entity('service')
 export class serviceEntity {
-    @PrimaryColumn({type:'integer'})
+    @PrimaryGeneratedColumn()
+    @PrimaryColumn({type:'integer' , generated : true})
     service_id: number;
-  
+
     @Column({ type: 'character varying', length: 30, unique: true , nullable : false })
     service_code: string;
   

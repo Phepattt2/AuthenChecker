@@ -1,7 +1,7 @@
 
 export class transactionDTO {
 
-    ref_id: String;
+    ref_id: string;
 
     app_id: string;
 
@@ -39,7 +39,7 @@ export class transactionDTO {
     
     fee: number;
 
-    editable_amount: number;
+    // editable_amount: number;
 
     created_at: Date;
     

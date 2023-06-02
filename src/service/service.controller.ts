@@ -1,9 +1,12 @@
-import { Controller, HttpCode, HttpStatus, Post, Body, Get } from '@nestjs/common';
+import { Controller, HttpCode, HttpStatus, Post, Body, Get, Req, Res ,Put ,Delete } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { serviceEntity } from 'src/entity/service.Entity';
 import { Repository } from 'typeorm';
 import { ServiceService } from './service.service';
 import { serviceDTO } from 'src/dto/service.dto';
+import { Response, Request } from 'express';
+
+const excludedKey = ['service_id', 'created_at', 'latest_fee_at']
 
 @Controller('service')
 export class ServiceController {
@@ -11,34 +14,110 @@ export class ServiceController {
 
     @Post('/createService')
     @HttpCode(HttpStatus.CREATED)
-    async createService(@Body() service: serviceDTO): Promise<serviceEntity> {
+    async createService(@Req() req: Request, @Res() res: Response, @Body() service: serviceDTO): Promise<void> {
+        const serviceStatusAllowed = [0, 1];
+        const requireCalfeeAllowed = [0, 1];
 
-        const addService = new serviceEntity();
-        addService.service_id = service.service_id;
-        addService.service_code = service.service_code;
-        addService.service_type = service.service_type;
-        addService.service_name = service.service_name;
-        addService.service_fee = service.service_fee;
-        addService.service_status = service.service_status;
-        addService.provider_code = service.provider_code;
-        addService.provider_service_id = service.provider_service_id;
-        addService.created_at = new Date();
-        addService.require_calfee = service.require_calfee;
-        // fix 
-        addService.latest_fee_at = new Date();
+        try {
 
-        if (service.service_status >= 0 && service.service_status <= 1 && service.require_calfee >= 0 && service.require_calfee <= 1) {
-            return await this.serviceService.insertService(addService);
-        } else {
-            console.log('input out of range (service_status or require_calfee)')
-            return addService;
+            if (service.service_status in serviceStatusAllowed && service.require_calfee in requireCalfeeAllowed) {
+
+
+                const resInit = await initer(excludedKey, service)
+
+                //generate key
+                resInit.service_id = service.service_id;
+
+                resInit.created_at = new Date();
+
+                resInit.latest_fee_at = new Date();
+
+                const insertRes = this.serviceService.insertService(resInit);
+
+                res.status(200).json({ insertRes })
+
+            } else {
+                res.status(500).json({ error:'invalid input error'})
+
+            }
+
+
+        } catch (err) {
+
+            console.log(err);
+            
+            res.status(500).json({ error: 'Internal Server Error' })
+        
         }
     }
 
+
     @Get('/getAllService')
-    async getAllService () : Promise<serviceEntity[]> {
-        return this.serviceService.findAll()}
+    async getAllService(@Req() req: Request, @Res() res: Response): Promise<void> {
+        try{
 
-    
+            const getRes = await this.serviceService.findAll()
 
+            res.status(200).json(getRes)
+
+        } catch (err){
+
+            console.log(err);
+            
+            res.status(500).json({ error : 'Internal Server Error' })
+
+        }
+    }
+
+    // @Put('/updateById')
+    // async updateServiceById(@Req() req: Request, @Res() res: Response, @Body() service: serviceDTO): Promise<void> {
+    //     try {
+
+    //         const intiRes = await initer(excludedKey,service) ; 
+    //         intiRes.service_id = service.service_id ; 
+    //         const updateRes = await this.serviceService.updateById(intiRes);
+
+    //         res.status(200).json(updateRes);
+
+    //     } catch (e) {
+
+    //         console.log(e);
+
+    //         res.status(500).json({ error: 'Internal Server Error' });
+
+    //     }
+    // }
+
+    // @Delete('/deleteById')
+    // async deleteServiceById(@Req() req: Request, @Res() res: Response, @Body() service_id: number): Promise<void> {
+    //     try {
+
+    //         const delRes = await this.serviceService.deleteById(service_id)
+
+    //         res.status(200).json(delRes);
+
+    //     } catch (e) {
+
+    //         console.log(e);
+
+    //         res.status(500).json({ error: 'Internal Server Error' });
+
+    //     }
+    // }
+
+
+
+
+
+}
+
+
+async function initer(notIncludeList: string[], userInputDTO: serviceDTO): Promise<serviceEntity> {
+    const exportedObject = new serviceEntity();
+    for (var key in userInputDTO) {
+        if (notIncludeList.includes(key) == false) {
+            exportedObject[key] = userInputDTO[key];
+        }
+    }
+    return exportedObject
 }
