@@ -17,16 +17,16 @@ export class TransactionController {
             const transaction = await this.transactionService.findAll();
             res.status(200).json(transaction)
         } catch (err) {
-        console.log(err)
+            console.log(err)
             res.status(500).json({ error: 'Internal Server Error' })
         }
-        
+
     }
 
     @Post('/createTransaction')
     @HttpCode(HttpStatus.CREATED)
 
-    async createProvider(@Req() req: Request, @Res() res: Response, @Body() newTransaction: transactionDTO): Promise<void> {
+    async createTransaction(@Req() req: Request, @Res() res: Response, @Body() newTransaction: transactionDTO): Promise<void> {
 
         try {
             const setEntity = await initer(excludedKey, newTransaction)
@@ -42,12 +42,24 @@ export class TransactionController {
     }
 
     @Put("/updateById")
-    async updateAuthById(@Req() req: Request, @Res() res: Response, @Body() transaction: transactionDTO): Promise<void> {
+    async updateTransactionById(@Req() req: Request, @Res() res: Response, @Body() transaction: transactionDTO): Promise<void> {
         try {
-            const initRes = await initer(excludedKey,transaction)
-            initRes.ref_id = transaction.ref_id ;
+
+            const initRes = await initer(excludedKey, transaction)
+
+            initRes.ref_id = transaction.ref_id;
+
             const updateResult = await this.transactionService.updateById(initRes);
-            res.status(200).json(updateResult);
+
+            if (!updateResult) {
+
+                res.status(404).json(`Error: transaction not found`);
+
+            } else {
+
+                res.status(200).json(updateResult);
+
+            }
         } catch (e) {
             console.error(e);
             res.status(500).json({ error: 'Internal Server Error' });
@@ -55,11 +67,11 @@ export class TransactionController {
     }
 
     @Delete("/deleteById")
-    async deleteAuthById(@Req() req: Request, @Res() res: Response, @Body() transactionDTO: transactionDTO): Promise<void> {
+    async deleteTransactionById(@Req() req: Request, @Res() res: Response, @Body() transactionDTO: transactionDTO): Promise<void> {
         try {
             const deleteResult = await this.transactionService.deleteById(transactionDTO.ref_id);
             res.status(200).json(deleteResult);
-        }catch(e){
+        } catch (e) {
             console.error(e);
             res.status(500).json({ error: 'Internal Server Error' });
         }

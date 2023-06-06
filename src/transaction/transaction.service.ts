@@ -16,7 +16,6 @@ export class TransactionService {
 
     async insertTransaction(transaction: transactionEntity): Promise<transactionEntity> {
         try{
-        console.log("runner key ", transaction.ref_id)
 
         return await this.transactionRepository.save(transaction);}
         catch (e){
@@ -36,36 +35,18 @@ export class TransactionService {
 
     async updateById(transaction: transactionEntity): Promise<transactionEntity|null> {
         try {
-            console.log(transaction)
 
-            console.log(transaction.ref_id)
             const found = await this.transactionRepository.findOneBy({ref_id:transaction.ref_id})
             // const found = await this.transactionRepository.findOneById(transaction.ref_id)
             if (found) {
 
                 const upFound = await initerUpdate(excludedKey,transaction,found) ;
-                upFound.ref_id = transaction.ref_id ; 
-                // found.txn_status = transaction.txn_status
-                // found.service_txn_id = transaction.service_txn_id
-                // found.service_session = transaction.service_session
-                // found.reference1 = transaction.reference1
-                // found.reference2 = transaction.reference2
-                // found.reference3 = transaction.reference3
-                // found.reference4 = transaction.reference4
-                // found.reference5 = transaction.reference5
-                // found.reference6 = transaction.reference6
-                // found.device_type = transaction.device_type
-                // found.device_id = transaction.device_id
-                // found.location_id = transaction.location_id
-                // found.cashier_id = transaction.cashier_id
-                // found.txn_detail = transaction.txn_detail
-                // found.amount = transaction.amount
-                // found.fee = transaction.fee
+                upFound.ref_id = transaction.ref_id ;
 
                 return await this.transactionRepository.save(found);
             } else {
                 console.log('error transaction not fonud')
-                return transaction;
+                return found;
             }
         } catch (e) {
             console.log('error : ', e)

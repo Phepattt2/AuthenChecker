@@ -76,8 +76,14 @@ export class ServiceController {
             const intiRes = await initer(excludedKey,service) ; 
             intiRes.service_id = service.service_id ; 
             const updateRes = await this.serviceService.updateById(intiRes);
+            if(!updateRes){
+            res.status(404).json(`Error: service not found`);
+                
+            }else{
+                res.status(200).json(updateRes);
 
-            res.status(200).json(updateRes);
+            }
+
 
         } catch (e) {
 

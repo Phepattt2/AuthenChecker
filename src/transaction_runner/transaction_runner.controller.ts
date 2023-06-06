@@ -15,21 +15,21 @@ export class TransactionRunnerController {
     ) { }
 
 
-    @Post("/createTRun")
+    @Post("/createTransactionRunner")
     @HttpCode(HttpStatus.CREATED)
     async createTransactionRunner(@Req() req: Request, @Res() res: Response, @Body() newTransactionRunner: transactionRunnerDTO): Promise<void> {
         try {
 
             const addTransactionRunner = new transactionRunnerEntity();
-            
+
             // init the culumns value. 
-            const intiRes = await initer(excludedKey,newTransactionRunner) ;
+            const intiRes = await initer(excludedKey, newTransactionRunner);
 
             // generate ref_id key
             intiRes.runner_key = gen_ref_id(0);
-            
+
             const creatRes = await this.transactionRunnerService.insertTransactionRunner(intiRes);
-            
+
             res.status(200).json(creatRes)
 
         } catch (e) {
@@ -39,7 +39,7 @@ export class TransactionRunnerController {
     }
 
     @Get('/getAllTransactionRunner')
-    async getAllTransaction(@Req() req: Request, @Res() res: Response): Promise<void> {
+    async getAllTransactionRunner(@Req() req: Request, @Res() res: Response): Promise<void> {
         try {
             const getRes = await this.transactionRunnerService.findAll();
             res.status(200).json(getRes);
@@ -53,17 +53,30 @@ export class TransactionRunnerController {
     @Put("/updateById")
     async updateTransactionRunnerById(@Req() req: Request, @Res() res: Response, @Body() transactionRunner: transactionRunnerDTO): Promise<void> {
         try {
-            const initRes = await initer(excludedKey,transactionRunner) ; 
-            
-            initRes.runner_key = transactionRunner.runner_key ; 
-            console.log(initRes)
-            const updateRes = await this.transactionRunnerService.updateById(initRes);
 
-            res.status(200).json(updateRes)
+            const initRes = await initer(excludedKey, transactionRunner);
+
+            initRes.runner_key = transactionRunner.runner_key;
+
+
+            const updateResult = await this.transactionRunnerService.updateById(initRes);
+
+            if (!updateResult) {
+
+                res.status(404).json({Error: "transaction runner not found"});
+
+            } else {
+
+                res.status(200).json(updateResult);
+
+            }
 
         } catch (e) {
+
             console.log(e)
-            res.status(500).json({ error: 'Internal Server Error' })
+
+            res.status(500).json({ Error: 'Internal Server Error' })
+
         }
     }
 

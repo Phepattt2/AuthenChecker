@@ -2,7 +2,7 @@ import {Column, CreateDateColumn, Entity, PrimaryColumn, PrimaryGeneratedColumn}
 
 @Entity("provider")
 export class  providerEntity {
-    @PrimaryColumn({type : 'character varying' , length : 20 , nullable : false}) 
+    @PrimaryColumn({ type : 'character varying' , length : 20 , nullable : false }) 
     provider_code : string ;
     @Column({  type : 'text' , nullable : false})
     provider_name : string ; 

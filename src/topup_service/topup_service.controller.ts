@@ -29,7 +29,7 @@ export class TopupServiceController {
         }
     }
     @Put('/updateById')
-    async updatetopUpServiceById(@Req() req: Request, @Res() res: Response, @Body() topUpService: topUpServiceDTO): Promise<void> {
+    async updateTopUpServiceById(@Req() req: Request, @Res() res: Response, @Body() topUpService: topUpServiceDTO): Promise<void> {
         try {
 
             const initRes = await initer(excludedKeys,topUpService) ; 
@@ -37,6 +37,14 @@ export class TopupServiceController {
             initRes.updated_at = new Date() ;
 
             const updateRes = await this.topUpServiceService.updateById(initRes);
+
+            if(!updateRes){
+                res.status(404).json(`Error: service not found`);
+                    
+                }else{
+                    res.status(200).json(updateRes);
+    
+                }
 
             res.status(200).json(updateRes);
 
@@ -50,7 +58,7 @@ export class TopupServiceController {
     }
 
     @Delete('/deleteById')
-    async deletetopUpServiceById(@Req() req: Request, @Res() res: Response, @Body() topUpServiceDTO: topUpServiceDTO): Promise<void> {
+    async deleteTopUpServiceById(@Req() req: Request, @Res() res: Response, @Body() topUpServiceDTO: topUpServiceDTO): Promise<void> {
         try {
 
             const initRes = await initer(excludedKeys, topUpServiceDTO) ;

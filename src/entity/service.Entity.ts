@@ -8,6 +8,7 @@ export class serviceEntity {
     service_id: number;
 
     @Column({ type: 'character varying', length: 30, unique: true , nullable : false })
+    
     service_code: string;
   
     @Column({ type: 'smallint' , nullable : false})
@@ -25,6 +26,7 @@ export class serviceEntity {
     // FK 
     @ManyToOne(() => providerEntity , {eager : true , cascade : true , onDelete : "CASCADE" })
     @JoinColumn({ name: 'provider_code' })
+    
     provider_code: string;
 
     @Column({ type: 'smallint', default: 0 , nullable : false  })
