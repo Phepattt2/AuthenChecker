@@ -3,7 +3,7 @@ import { topUpServiceEntity } from 'src/entity/topup_service.Entity';
 import { Request, Response } from 'express';
 import { TopupServiceService } from './topup_service.service';
 import { topUpServiceDTO } from 'src/dto/topUpService.dto';
-const excludedKeys = ['service_id', 'topup_order', 'updated_at'];
+const excludedKeys = ['service_id','topup_order','updated_at'];
 
 @Controller('topup-service')
 export class TopupServiceController {
@@ -34,7 +34,7 @@ export class TopupServiceController {
 
             const initRes = await initer(excludedKeys,topUpService) ; 
             
-            initRes.service_id = topUpService.serivce_id ; 
+            initRes.updated_at = new Date() ;
 
             const updateRes = await this.topUpServiceService.updateById(initRes);
 
@@ -50,10 +50,13 @@ export class TopupServiceController {
     }
 
     @Delete('/deleteById')
-    async deletetopUpServiceById(@Req() req: Request, @Res() res: Response, @Body() service_id: number): Promise<void> {
+    async deletetopUpServiceById(@Req() req: Request, @Res() res: Response, @Body() topUpServiceDTO: topUpServiceDTO): Promise<void> {
         try {
 
-            const delRes = await this.topUpServiceService.deleteById(service_id)
+            const initRes = await initer(excludedKeys, topUpServiceDTO) ;
+            initRes.service_id = topUpServiceDTO.service_id ; 
+            initRes.topup_order = topUpServiceDTO.topup_order ; 
+            const delRes = await this.topUpServiceService.deleteById(initRes) ;
 
             res.status(200).json(delRes);
 
@@ -70,11 +73,11 @@ export class TopupServiceController {
     @HttpCode(HttpStatus.CREATED)
     async createTopUPService(@Req() req: Request, @Res() res: Response, @Body() topUpService: topUpServiceDTO): Promise<void> {
         try {
-
-
             // init value in columns 
             const initRes = await initer(excludedKeys, topUpService);
-
+            initRes.updated_at = new Date()  ;
+            initRes.service_id = topUpService.service_id  ;
+            initRes.topup_order = topUpService.topup_order ;
             const insertRes = await this.topUpServiceService.insertTopUpService(initRes);
 
             res.status(200).json(insertRes);

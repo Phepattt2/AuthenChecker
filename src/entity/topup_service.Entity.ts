@@ -11,8 +11,7 @@ export class topUpServiceEntity {
     service_id : number ;
 
     @PrimaryColumn({type:'smallint' , nullable : false })
-    @Column({length : 20})
-    topup_order : string ; 
+    topup_order : number ; 
 
     @Column({type:'integer' , nullable : false})
     topup_amount : number ; 

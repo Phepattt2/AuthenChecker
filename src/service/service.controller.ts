@@ -32,7 +32,7 @@ export class ServiceController {
 
                 resInit.latest_fee_at = new Date();
 
-                const insertRes = this.serviceService.insertService(resInit);
+                const insertRes = await this.serviceService.insertService(resInit);
 
                 res.status(200).json({ insertRes })
 
