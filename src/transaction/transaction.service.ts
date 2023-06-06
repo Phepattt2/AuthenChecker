@@ -75,7 +75,10 @@ export class TransactionService {
 
     async deleteById(runner_key: string): Promise<string> {
         try {
-            await this.transactionRepository.delete(runner_key);
+            const delRes =  await this.transactionRepository.delete(runner_key);
+            if(delRes.affected == 0 ){
+                return "transaction delete failed not found";
+            }
             return "transaction successfully deleted";
         } catch (e) {
             console.log('error : ', e)

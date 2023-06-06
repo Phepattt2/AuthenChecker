@@ -1,7 +1,7 @@
 import { Controller, HttpCode, HttpStatus, Post, Body, Get, Req, Res ,Put ,Delete } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { serviceEntity } from 'src/entity/service.Entity';
-import { Repository } from 'typeorm';
+import { IntegerType, Repository } from 'typeorm';
 import { ServiceService } from './service.service';
 import { serviceDTO } from 'src/dto/service.dto';
 import { Response, Request } from 'express';
@@ -69,41 +69,40 @@ export class ServiceController {
         }
     }
 
-    // @Put('/updateById')
-    // async updateServiceById(@Req() req: Request, @Res() res: Response, @Body() service: serviceDTO): Promise<void> {
-    //     try {
+    @Put('/updateById')
+    async updateServiceById(@Req() req: Request, @Res() res: Response, @Body() service: serviceDTO): Promise<void> {
+        try {
 
-    //         const intiRes = await initer(excludedKey,service) ; 
-    //         intiRes.service_id = service.service_id ; 
-    //         const updateRes = await this.serviceService.updateById(intiRes);
+            const intiRes = await initer(excludedKey,service) ; 
+            intiRes.service_id = service.service_id ; 
+            const updateRes = await this.serviceService.updateById(intiRes);
 
-    //         res.status(200).json(updateRes);
+            res.status(200).json(updateRes);
 
-    //     } catch (e) {
+        } catch (e) {
 
-    //         console.log(e);
+            console.log(e);
 
-    //         res.status(500).json({ error: 'Internal Server Error' });
+            res.status(500).json({ error: 'Internal Server Error' });
 
-    //     }
-    // }
+        }
+    }
 
-    // @Delete('/deleteById')
-    // async deleteServiceById(@Req() req: Request, @Res() res: Response, @Body() service_id: number): Promise<void> {
-    //     try {
+    @Delete('/deleteById')
+    async deleteServiceById(@Req() req: Request, @Res() res: Response, @Body() service: serviceDTO): Promise<void> {
+        try {
+            const delRes = await this.serviceService.deleteById(service.service_id)
+            console.log(delRes)
+            res.status(200).json(delRes);
 
-    //         const delRes = await this.serviceService.deleteById(service_id)
+        } catch (e) {
 
-    //         res.status(200).json(delRes);
+            console.log(e);
 
-    //     } catch (e) {
+            res.status(500).json({ error: 'Internal Server Error' });
 
-    //         console.log(e);
-
-    //         res.status(500).json({ error: 'Internal Server Error' });
-
-    //     }
-    // }
+        }
+    }
 
 
 

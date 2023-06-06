@@ -68,9 +68,9 @@ export class TransactionRunnerController {
     }
 
     @Delete("/deleteById")
-    async deleteTransactionRunnerById(@Req() req: Request, @Res() res: Response, @Body() app_id: string): Promise<void> {
+    async deleteTransactionRunnerById(@Req() req: Request, @Res() res: Response, @Body() transactionRunnerDTO: transactionRunnerDTO): Promise<void> {
         try {
-            const delRes = await this.transactionRunnerService.deleteById(app_id);
+            const delRes = await this.transactionRunnerService.deleteById(transactionRunnerDTO.runner_key);
             res.status(200).json(delRes);
         } catch (err) {
             console.log(err);

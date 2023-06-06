@@ -69,6 +69,10 @@ export class TopupServiceService {
             .delete()
             .where('service_id = :value1 AND topup_order = :value2' , {value1 : topUpService.service_id ,value2 : topUpService.topup_order})
             .execute();
+            if(delRes.affected == 0 ){
+                return "topUpService delete failled not found"
+            }
+            return "topUpService successfully deleted"
         } catch (e) {
             console.log('error : ', e)
             return e;

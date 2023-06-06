@@ -4,7 +4,7 @@ import { providerEntity } from "./provider.Entity";
 @Entity('service')
 export class serviceEntity {
     // @PrimaryGeneratedColumn()
-    @PrimaryColumn({type:'integer' , generated : false})
+    @PrimaryColumn({generated : false})
     service_id: number;
 
     @Column({ type: 'character varying', length: 30, unique: true , nullable : false })

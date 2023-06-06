@@ -15,7 +15,6 @@ export class TransactionController {
         try {
             console.log('recived get ')
             const transaction = await this.transactionService.findAll();
-            console.log(JSON.stringify(transaction))
             res.status(200).json(transaction)
         } catch (err) {
         console.log(err)
@@ -31,7 +30,7 @@ export class TransactionController {
 
         try {
             const setEntity = await initer(excludedKey, newTransaction)
-            const res_data = this.transactionService.insertTransaction(setEntity);
+            const res_data = await this.transactionService.insertTransaction(setEntity);
             res.status(200).json(res_data)
         } catch (e) {
             console.error(e);
@@ -56,9 +55,9 @@ export class TransactionController {
     }
 
     @Delete("/deleteById")
-    async deleteAuthById(@Req() req: Request, @Res() res: Response, @Body() app_id: string): Promise<void> {
+    async deleteAuthById(@Req() req: Request, @Res() res: Response, @Body() transactionDTO: transactionDTO): Promise<void> {
         try {
-            const deleteResult = await this.transactionService.deleteById(app_id);
+            const deleteResult = await this.transactionService.deleteById(transactionDTO.ref_id);
             res.status(200).json(deleteResult);
         }catch(e){
             console.error(e);

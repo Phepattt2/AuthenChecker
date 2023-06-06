@@ -1,75 +1,89 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { serviceEntity } from 'src/entity/service.Entity';
-import { Repository } from 'typeorm';
+import { IntegerType, Repository } from 'typeorm';
+import { deserializeStream } from 'typeorm/driver/mongodb/bson.typings';
+
+const excludedKey = ['service_id', 'created_at', 'latest_fee_at']
+
 
 @Injectable()
 export class ServiceService {
     constructor(
         @InjectRepository(serviceEntity)
-        private readonly serviceRepository : Repository<serviceEntity>
+        private readonly serviceRepository: Repository<serviceEntity>
         ,
-    ){}
+    ) { }
 
-    async insertService( service : serviceEntity ) : Promise<serviceEntity> {
-        return await this.serviceRepository.save(service) ;
-    } 
+    async insertService(service: serviceEntity): Promise<serviceEntity> {
+        return await this.serviceRepository.save(service);
+    }
 
-    async findAll() : Promise<serviceEntity[]> {
-        return await this.serviceRepository.find() ;
-    } 
+    async findAll(): Promise<serviceEntity[]> {
+        return await this.serviceRepository.find();
+    }
 
-    // async updateById(service: serviceEntity): Promise<serviceEntity> {
-    //     try {
+    async updateById(service: serviceEntity): Promise<serviceEntity> {
+        try {
 
-    //         const found = await this.serviceRepository.findOneBy({ 'service_id': service.service_id })
-            
-    //         if (found) {
+            const found = await this.serviceRepository.findOneBy({ 'service_id': service.service_id })
 
-    //             found.topup_amount = service.topup_amount;
+            if (found != null) {
 
-    //             found.updated_at = new Date();
+                const initRes = await initerUpdate(excludedKey, service, found);
 
-    //             return await this.serviceRepository.save(found);
+                return await this.serviceRepository.save(initRes);
 
-    //         } else {
+            } else {
 
-    //             console.log('error topUpService not fonud')
+                console.log('error topUpService not fonud')
 
-    //             return topUpService;
+                return found;
 
-    //         }
-    //     } catch (e) {
+            }
+        } catch (e) {
 
-    //         console.log('error : ', e)
+            console.log('error : ', e)
 
-    //         return topUpService;
+            return e;
 
-    //     }
-    // }
+        }
+    }
 
-    // async deleteById(service_id: number): Promise<string> {
-    //     try {
+    async deleteById(service_id: number): Promise<string> {
+        try {
+            const delRes = await this.serviceRepository.createQueryBuilder() 
+            .delete() 
+            .where('service_id = :value1' , {
+                value1 : service_id,
+            })
+            .execute() ; 
 
-    //         if (await this.serviceRepository.findOneBy({ 'service_id': service_id })) {
+            console.log('delRes ' , delRes)
+            if(delRes.affected ==0 ) {
+                return "service delete failed not found "
+            }
 
-    //             await this.serviceRepository.delete(service_id);
-                
-    //             return "topUpService successfully deleted";
-            
-    //         } else {
-             
-    //             return "topUpService failled"
-            
-    //         }
-    //     } catch (e) {
 
-    //         console.log('error : ', e)
+            return "topUpService successfully deleted";
 
-    //         return e;
+        } catch (e) {
 
-    //     }
-    // }
+            console.log('error : ', e)
+
+            return e;
+
+        }
+    }
 
 }
 
+async function initerUpdate(notIncludeList: string[], userInput: serviceEntity, baseInput: serviceEntity): Promise<serviceEntity> {
+    const exportedObject = baseInput;
+    for (var key in userInput) {
+        if (notIncludeList.includes(key) == false) {
+            exportedObject[key] = userInput[key];
+        }
+    }
+    return exportedObject
+}

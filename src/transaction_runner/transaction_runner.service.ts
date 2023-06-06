@@ -56,7 +56,7 @@ export class TransactionRunnerService {
                 await this.transactionRunnerRepository.delete(runner_key);
                 return "transaction_runner successfully deleted";
             } else {
-                return "transaction_runner failled "
+                return "transaction_runner delete failed not found";
             }
         } catch (e) {
             console.log('error : ', e);
