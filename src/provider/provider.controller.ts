@@ -14,7 +14,7 @@ export class ProviderController {
         return this.providerService.findAll();
     }
 
-    @Post('/createProv')
+    @Post('/createProvider')
     @HttpCode(HttpStatus.CREATED)
 
     async createProvider(@Req() req: Request, @Res() res: Response,@Body() newProvider: providerDTO): Promise<void> {
@@ -38,7 +38,7 @@ export class ProviderController {
 
 
     @Put('/updateById')
-    async updateServiceById(@Req() req: Request, @Res() res: Response, @Body() providerDTO: providerDTO): Promise<void> {
+    async updateProviderById(@Req() req: Request, @Res() res: Response, @Body() providerDTO: providerDTO): Promise<void> {
         try {
 
             const intiRes = await initer(excludedKey, providerDTO);
@@ -67,7 +67,7 @@ export class ProviderController {
     }
 
     @Delete('/deleteById')
-    async deleteServiceById(@Req() req: Request, @Res() res: Response, @Body() provider: providerDTO): Promise<void> {
+    async deleteProviderById(@Req() req: Request, @Res() res: Response, @Body() provider: providerDTO): Promise<void> {
         try {
             const delRes = await this.providerService.deleteById(provider.provider_code)
             console.log(delRes)

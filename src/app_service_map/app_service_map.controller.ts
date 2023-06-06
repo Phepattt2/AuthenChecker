@@ -1,15 +1,80 @@
-import { Controller , Get } from '@nestjs/common';
 import { AppServiceMapService } from './app_service_map.service';
 import { appServiceMapEntity } from 'src/entity/app_service_map.Entity';
+import { Response, Request } from 'express';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Put, Delete, Req, Res } from '@nestjs/common';
+import { appServiceMapDTO } from 'src/dto/app_service_map.dto';
 
+// fis this page then go recheck others 
+
+const excludedKey = ['app_id', 'servicer_id', 'created_at'];
 @Controller('app-service-map')
 export class AppServiceMapController {
     constructor(
-        private readonly appServiceMapService : AppServiceMapService 
-    ){}
+        private readonly appServiceMapService: AppServiceMapService
+    ) { }
 
     @Get('/getAllAppServiceMap')
-    async getAllAppServiceMap(): Promise<appServiceMapEntity[]>{
-        return await  this.appServiceMapService.findAll() ;
-    } 
+    async getAllAppServiceMap(@Req() req: Request, @Res() res: Response): Promise<void> {
+        try {
+            const getRes = await this.appServiceMapService.findAll();
+            res.status(200).json(getRes)
+
+        } catch (e) {
+            console.log(e);
+            res.status(500).json({ Error: 'Internal Server Error' });
+        }
+    }
+    @Post("/createAppServiceMap")
+    @HttpCode(HttpStatus.CREATED)
+    async createAppServiceMap(@Req() req: Request, @Res() res: Response, @Body() appServiceDTO: appServiceMapDTO): Promise<void> {
+
+        try {
+            const initRes = await initer(excludedKey, appServiceDTO);
+
+            initRes.app_id = appServiceDTO.app_id;
+            initRes.service_id = appServiceDTO.service_id;
+            initRes.created_at = appServiceDTO.created_at;
+
+            const createRes = await this.appServiceMapService.insertAppServiceMap(initRes);
+            res.status(200).json(createRes)
+
+
+        } catch (e) {
+            console.log(e)
+            res.status(500).json({ Error: "Internal Server Error" })
+        }
+
+    }
+
+    @Delete("/deleteById")
+    async deleteAppServiceMapById(@Req() req: Request, @Res() res: Response, @Body() newAppService: appServiceMapDTO): Promise<void> {
+        try {
+
+            const initRes = await initer(excludedKey, newAppService);
+            initRes.service_id = newAppService.service_id;
+            initRes.app_id = newAppService.app_id;
+
+            const delRes = await this.appServiceMapService.deleteById(initRes);
+
+            res.status(200).json(delRes);
+
+        } catch (e) {
+
+            console.log(e);
+
+            res.status(500).json({ error: 'Internal Server Error' });
+
+        }
+
+
+    }
+}
+async function initer(notIncludeList: string[], userInputDTO: appServiceMapEntity): Promise<appServiceMapEntity> {
+    const exportedObject = new appServiceMapEntity();
+    for (var key in userInputDTO) {
+        if (notIncludeList.includes(key) == false) {
+            exportedObject[key] = userInputDTO[key];
+        }
+    }
+    return exportedObject
 }

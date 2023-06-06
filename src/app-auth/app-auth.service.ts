@@ -33,8 +33,16 @@ export class AppAuthService {
     }
     async deleteById(idNumber: string): Promise<string> {
         try{
-            await this.appAuthRepository.delete(idNumber) ; 
-            return "app_auth successfully deleted";
+            console.log(idNumber)
+            const delRes = await this.appAuthRepository.createQueryBuilder()
+            .delete()
+            .where('app_id = :value1', {value1 : idNumber })
+            .execute();
+            console.log(delRes);
+            if(delRes.affected == 0 ){
+                return "AppAuth delete failled not found"
+            }
+            return "AppAuth successfully deleted"
         }catch(e){
             console.log(e)
             return e ;
