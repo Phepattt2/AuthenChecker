@@ -67,6 +67,16 @@ export class TransactionService {
         }
     }
 
+    async searchBy(entity : transactionEntity): Promise<transactionEntity[]> {
+        const found = await this.transactionRepository.findBy(entity) ; 
+            if (found) {
+                return found
+            } else {
+                return null ; 
+            }
+    }
+
+
 
 }
 
