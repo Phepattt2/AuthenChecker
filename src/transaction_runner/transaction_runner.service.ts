@@ -45,7 +45,7 @@ export class TransactionRunnerService {
             }
     }
 
-    async findBy(entity : transactionRunnerEntity): Promise<transactionRunnerEntity[]> {
+    async searchBy(entity : transactionRunnerEntity): Promise<transactionRunnerEntity[]> {
         const found = await this.transactionRunnerRepository.findBy(entity) ; 
             if (found) {
                 return found

@@ -91,12 +91,12 @@ export class TransactionRunnerController {
         }
     }
 
-    @Get('/getFind')
+    @Get('/getSearch')
     async getFindByEntity(@Req() req: Request, @Res() res: Response , @Body() transactionRunnerDTO: transactionRunnerDTO ): Promise<void> {
         const initRes = await initer(excludedKey , transactionRunnerDTO) ;
         initRes.runner_key = transactionRunnerDTO.runner_key ;
 
-       const findResult = await  this.transactionRunnerService.findBy(initRes) ;
+       const findResult = await  this.transactionRunnerService.searchBy(initRes) ;
         res.status(200).json(findResult) ; 
     }
 }
