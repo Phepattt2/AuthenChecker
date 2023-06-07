@@ -16,7 +16,14 @@ export class ProviderService {
     }
 
     async insertProvider(provider: providerEntity): Promise<providerEntity> {
-        return this.providerRepository.save(provider);
+        const sameNameProvider  = this.providerRepository.findBy({provider_name:provider.provider_name}) 
+        if( sameNameProvider ){
+            return null ; 
+        }else { 
+            return this.providerRepository.save(provider);
+
+        }
+
     }
 
     async updateById(provider: providerEntity): Promise<providerEntity> {

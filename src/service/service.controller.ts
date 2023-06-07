@@ -1,4 +1,4 @@
-import { Controller, HttpCode, HttpStatus, Post, Body, Get, Req, Res ,Put ,Delete } from '@nestjs/common';
+import { Controller, HttpCode, HttpStatus, Post, Body, Get, Req, Res, Put, Delete } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { serviceEntity } from 'src/entity/service.Entity';
 import { IntegerType, Repository } from 'typeorm';
@@ -7,6 +7,9 @@ import { serviceDTO } from 'src/dto/service.dto';
 import { Response, Request } from 'express';
 
 const excludedKey = ['service_id', 'created_at', 'latest_fee_at']
+const serviceStatusAllowed = [0, 1];
+const requireCalfeeAllowed = [0, 1];
+const serviceTypeAllowed = [1,2,3,4,5,6]
 
 @Controller('service')
 export class ServiceController {
@@ -15,13 +18,11 @@ export class ServiceController {
     @Post('/createService')
     @HttpCode(HttpStatus.CREATED)
     async createService(@Req() req: Request, @Res() res: Response, @Body() service: serviceDTO): Promise<void> {
-        const serviceStatusAllowed = [0, 1];
-        const requireCalfeeAllowed = [0, 1];
+
 
         try {
 
-            if (service.service_status in serviceStatusAllowed && service.require_calfee in requireCalfeeAllowed) {
-
+            if (service.service_status in serviceStatusAllowed && service.require_calfee in requireCalfeeAllowed && service.service_type in serviceTypeAllowed ) {
 
                 const resInit = await initer(excludedKey, service)
 
@@ -37,7 +38,7 @@ export class ServiceController {
                 res.status(200).json({ insertRes })
 
             } else {
-                res.status(500).json({ error:'invalid input error'})
+                res.status(422).json({ error: 'Unprocessable Entity ( invalid input )' })
 
             }
 
@@ -45,26 +46,26 @@ export class ServiceController {
         } catch (err) {
 
             console.log(err);
-            
+
             res.status(500).json({ error: 'Internal Server Error' })
-        
+
         }
     }
 
 
     @Get('/getAllService')
     async getAllService(@Req() req: Request, @Res() res: Response): Promise<void> {
-        try{
+        try {
 
             const getRes = await this.serviceService.findAll()
 
             res.status(200).json(getRes)
 
-        } catch (err){
+        } catch (err) {
 
             console.log(err);
-            
-            res.status(500).json({ error : 'Internal Server Error' })
+
+            res.status(500).json({ error: 'Internal Server Error' })
 
         }
     }
@@ -72,57 +73,63 @@ export class ServiceController {
     @Put('/updateById')
     async updateServiceById(@Req() req: Request, @Res() res: Response, @Body() service: serviceDTO): Promise<void> {
         try {
+            if (service.service_status in serviceStatusAllowed && service.require_calfee in requireCalfeeAllowed) {
 
-            const intiRes = await initer(excludedKey,service) ; 
-            intiRes.service_id = service.service_id ; 
-            const updateRes = await this.serviceService.updateById(intiRes);
-            if(!updateRes){
-            res.status(404).json(`Error: service not found`);
-                
-            }else{
-                res.status(200).json(updateRes);
+                const intiRes = await initer(excludedKey, service);
+                intiRes.service_id = service.service_id;
+                const updateRes = await this.serviceService.updateById(intiRes);
+                if (!updateRes) {
+                    res.status(404).json(`Error: service not found`);
 
+                } else {
+                    res.status(200).json(updateRes);
+
+                }
+            }else {
+                res.status(422).json({Error : "Unprocessable Entity ( invalid input )"});
             }
 
+            } catch (e) {
 
-        } catch (e) {
+                console.log(e);
 
-            console.log(e);
+                res.status(500).json({ error: 'Internal Server Error' });
 
-            res.status(500).json({ error: 'Internal Server Error' });
-
+            }
         }
-    }
 
     @Delete('/deleteById')
-    async deleteServiceById(@Req() req: Request, @Res() res: Response, @Body() service: serviceDTO): Promise<void> {
-        try {
-            const delRes = await this.serviceService.deleteById(service.service_id)
+        async deleteServiceById(@Req() req: Request, @Res() res: Response, @Body() service: serviceDTO): Promise < void> {
+            try {
+                const delRes = await this.serviceService.deleteById(service.service_id)
             console.log(delRes)
             res.status(200).json(delRes);
 
-        } catch (e) {
+            } catch(e) {
 
-            console.log(e);
+                console.log(e);
 
-            res.status(500).json({ error: 'Internal Server Error' });
+                res.status(500).json({ error: 'Internal Server Error' });
 
+            }
+        }
+
+        @Get('/getSearch')
+        async getFindByEntity(@Req() req: Request, @Res() res: Response, @Body() serviceDTO: serviceDTO): Promise < void> {
+            try{
+                const initRes = await initer(excludedKey, serviceDTO) ;
+                initRes.service_id = serviceDTO.service_id ;
+
+                const findResult = await this.serviceService.searchBy(initRes) ;
+                
+                res.status(200).json(findResult) ;
+
+            }catch(e) {
+                console.log(e);
+                res.status(500).json({ Error: 'internal server error' });
+            }
         }
     }
-
-    @Get('/getSearch')
-    async getFindByEntity(@Req() req: Request, @Res() res: Response , @Body() serviceDTO: serviceDTO ): Promise<void> {
-        const initRes = await initer(excludedKey , serviceDTO) ;
-        initRes.service_id = serviceDTO.service_id ;
-
-       const findResult = await  this.serviceService.searchBy(initRes) ;
-        res.status(200).json(findResult) ; 
-    }
-
-
-
-
-}
 
 
 async function initer(notIncludeList: string[], userInputDTO: serviceDTO): Promise<serviceEntity> {

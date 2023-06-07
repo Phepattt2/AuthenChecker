@@ -6,7 +6,14 @@ import { randomUUID, randomBytes } from 'crypto';
 import { bytesToBase64 } from 'byte-base64';
 import { Response, Request } from 'express';
 
-const excludedKey = ['app_id', 'app_secret', 'created_at', 'updated_at']
+
+
+// const value of this table  
+
+const excludedKey = ['app_id', 'app_secret', 'created_at', 'updated_at'];
+
+const statusAllowList = [0, 1];
+
 
 @Controller('app-auth')
 export class AppAuthController {
@@ -15,28 +22,34 @@ export class AppAuthController {
     @Post("/createAppAuth")
     @HttpCode(HttpStatus.CREATED)
     async createAppAuth(@Req() req: Request, @Res() res: Response, @Body() newApp: AppAuthDTO): Promise<void> {
-
         try {
-            const app = new app_auth();
-            const initRes = await initer(excludedKey, newApp);
 
-            initRes.app_id = randomUUID();
-            initRes.app_secret = bytesToBase64(randomBytes(63));
+            if ( newApp.app_status  in statusAllowList ) {
 
-            initRes.created_at = new Date();
-            initRes.updated_at = new Date();
+                const app = new app_auth();
+                const initRes = await initer(excludedKey, newApp);
 
-            if (newApp.app_status >= 0 && newApp.app_status <= 1) {
+                initRes.app_id = randomUUID();
+                initRes.app_secret = bytesToBase64(randomBytes(63));
+                initRes.created_at = new Date();
+                initRes.updated_at = new Date();
+
                 const createRes = await this.appAuthService.createAppAuth(initRes);
+
                 res.status(200).json(createRes)
+
             }
             else {
-                console.log('input out of range app_status')
-                res.status(500).json({ Error: 'Internal Server Error' })
+
+                console.log('invalid input app_status');
+                
+                res.status(422).json({Error:'Unprocessable Entity ( invalid input )'});
 
             }
+
         } catch (e) {
             console.log(e)
+            res.status(500).json({ Error: 'Internal Server Error' });
 
         }
 
@@ -44,35 +57,49 @@ export class AppAuthController {
 
     @Get("/getAllAppAuth")
     async getAllAppAuth(@Req() req: Request, @Res() res: Response): Promise<void> {
-        try{
+
+        try {
+
             const getRes = await this.appAuthService.findAll();
-            res.status(200).json(getRes) ;
-        }catch(e){
-            res.status(500).json({Error : 'Internal Server Error'})
+            res.status(200).json(getRes);
+
+        } catch (e) {
+
+            console.log(e);
+
+            res.status(500).json({ Error: 'Internal Server Error' });
 
         }
     }
 
     @Put("/updateById")
-    async updateAuthById(@Req() req: Request, @Res() res: Response,@Body() appAuthDTO: AppAuthDTO): Promise<void> {
+    async updateAuthById(@Req() req: Request, @Res() res: Response, @Body() appAuthDTO: AppAuthDTO): Promise<void> {
         try {
+            if ( appAuthDTO.app_status  in statusAllowList ) {
 
-            const intiRes = await initer(excludedKey, appAuthDTO);
+                const intiRes = await initer(excludedKey, appAuthDTO);
 
-            intiRes.app_id = appAuthDTO.app_id;
-            intiRes.updated_at = new Date() ; 
+                intiRes.app_id = appAuthDTO.app_id;
 
-            const updateResult = await this.appAuthService.updateById(intiRes);
+                intiRes.updated_at = new Date();
 
-            if (!updateResult) {
+                const updateResult = await this.appAuthService.updateById(intiRes);
 
-                res.status(404).json({ Error: "AppAuth not found" });
+                if (!updateResult) {
 
+                    res.status(404).json({ Error: "AppAuth not found" });
+
+                } else {
+
+                    res.status(200).json(updateResult);
+
+                }
             } else {
-                console.log(updateResult)
-                res.status(200).json(updateResult);
+
+                res.status(422).json({Error:'Unprocessable Entity ( invalid input )'});
 
             }
+
 
         } catch (e) {
 
@@ -85,15 +112,15 @@ export class AppAuthController {
 
     @Delete("/deleteById")
     async deleteAuthById(@Req() req: Request, @Res() res: Response, @Body() newApp: AppAuthDTO): Promise<void> {
-        console.log("newAPP is :",newApp)
-        const id = newApp.app_id ;
+
+        const id = newApp.app_id;
 
         try {
-        
+
             const delRes = await this.appAuthService.deleteById(id)
 
             console.log(delRes)
-            
+
             res.status(200).json(delRes);
 
         } catch (e) {
@@ -108,28 +135,44 @@ export class AppAuthController {
     }
 
     @Get('/getSearch')
-    async getFindByEntity(@Req() req: Request, @Res() res: Response , @Body() appAuthDTO: AppAuthDTO ): Promise<void> {
-        try{
-            const initRes = await initer(excludedKey , appAuthDTO) ;
-            initRes.app_id = appAuthDTO.app_id ;
-    
-           const findResult = await  this.appAuthService.searchBy(initRes) ;
-            res.status(200).json(findResult) ; 
-        }catch(e){
-            console.log(e)  ;
-            res.status(500).json({Error:'internal server error'}) ; 
+    async getFindByEntity(@Req() req: Request, @Res() res: Response, @Body() appAuthDTO: AppAuthDTO): Promise<void> {
+        try {
+
+            const initRes = await initer(excludedKey, appAuthDTO);
+
+            initRes.app_id = appAuthDTO.app_id;
+
+            const findResult = await this.appAuthService.searchBy(initRes);
+
+            res.status(200).json(findResult);
+
+        } catch (e) {
+
+            console.log(e);
+
+            res.status(500).json({ Error: 'internal server error' });
+
         }
-        
+
     }
 
 }
 
+// DTO parser ! excluding some keys 
+
 async function initer(notIncludeList: string[], userInputDTO: app_auth): Promise<app_auth> {
+
     const exportedObject = new app_auth();
+
     for (var key in userInputDTO) {
+
         if (notIncludeList.includes(key) == false) {
+
             exportedObject[key] = userInputDTO[key];
+
         }
     }
+
     return exportedObject
+
 }

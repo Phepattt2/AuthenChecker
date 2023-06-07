@@ -5,6 +5,9 @@ import { transactionDTO } from 'src/dto/transaction.dto';
 import { Request, Response } from 'express';
 
 const excludedKey = ['created_at', 'ref_id', 'paid_at'];
+const txn_statusAllow = [0,1,2,3]  ;
+
+
 
 @Controller('transaction')
 export class TransactionController {
@@ -29,9 +32,14 @@ export class TransactionController {
     async createTransaction(@Req() req: Request, @Res() res: Response, @Body() newTransaction: transactionDTO): Promise<void> {
 
         try {
-            const setEntity = await initer(excludedKey, newTransaction)
-            const res_data = await this.transactionService.insertTransaction(setEntity);
-            res.status(200).json(res_data)
+            if (  newTransaction.txn_status in txn_statusAllow ){
+                const setEntity = await initer(excludedKey, newTransaction)
+                const res_data = await this.transactionService.insertTransaction(setEntity);
+                res.status(200).json(res_data)
+            }else{
+                res.status(400).json({Error:'Unprocessable Entity ( invalid input ) '})
+            }
+            
         } catch (e) {
             console.error(e);
             res.status(500).json({ error: 'Internal Server Error' });
@@ -44,22 +52,27 @@ export class TransactionController {
     @Put("/updateById")
     async updateTransactionById(@Req() req: Request, @Res() res: Response, @Body() transaction: transactionDTO): Promise<void> {
         try {
+            if ( txn_statusAllow.includes(transaction.txn_status)){
 
-            const initRes = await initer(excludedKey, transaction)
+                const initRes = await initer(excludedKey, transaction)
 
-            initRes.ref_id = transaction.ref_id;
-
-            const updateResult = await this.transactionService.updateById(initRes);
-
-            if (!updateResult) {
-
-                res.status(404).json(`Error: transaction not found`);
-
+                initRes.ref_id = transaction.ref_id;
+    
+                const updateResult = await this.transactionService.updateById(initRes);
+    
+                if (!updateResult) {
+    
+                    res.status(404).json(`Error: transaction not found`);
+    
+                } else {
+    
+                    res.status(200).json(updateResult);
+    
+                }
             } else {
-
-                res.status(200).json(updateResult);
-
+                res.status(422).json({ Error : "Unprocessable Entity ( Unprocessable Entity )"})    ;
             }
+            
         } catch (e) {
             console.error(e);
             res.status(500).json({ error: 'Internal Server Error' });

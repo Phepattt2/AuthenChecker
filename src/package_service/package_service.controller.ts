@@ -1,17 +1,19 @@
-import { Controller ,Get ,Post ,Put , Delete , HttpCode , HttpStatus , Body ,Req , Res  } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, HttpCode, HttpStatus, Body, Req, Res } from '@nestjs/common';
 import { PackageServiceService } from './package_service.service';
 import { packageServiceEntity } from 'src/entity/package_service.Entity';
 import { packageServiceDTO } from 'src/dto/package_service.dto';
-import { Response , Request } from 'express';
+import { Response, Request } from 'express';
+
 const excludedKey = ['service_id', 'package_id', 'created_at', 'updated_at'];
+const packageServiceAllow = [1, 2, 3];
 
 @Controller('package-service')
 
 export class PackageServiceController {
 
-    constructor (
+    constructor(
         private readonly packageServiceService: PackageServiceService
-    ) {} 
+    ) { }
 
     @Get('/getAllTransactionRunner')
     async getAllTransaction(): Promise<packageServiceEntity[]> {
@@ -23,24 +25,30 @@ export class PackageServiceController {
 
     async createPackageService(@Req() req: Request, @Res() res: Response, @Body() packageServiceDTO: packageServiceDTO): Promise<void> {
         try {
-            const initRes  = await initer (excludedKey , packageServiceDTO) ;  
+            if (packageServiceDTO.package_type in packageServiceAllow || packageServiceDTO.package_type == null) {
+                const initRes = await initer(excludedKey, packageServiceDTO);
 
-            initRes.service_id = packageServiceDTO.service_id ; 
-    
-            initRes.package_id = packageServiceDTO.package_id ; 
-    
-            initRes.created_at = new Date() ;
-    
-            initRes.updated_at = new Date() ;
-    
-            const createRes = await this.packageServiceService.insertPackageService(initRes);
-    
-            res.status(200).json(createRes) ; 
-         }catch(e){
-            console.log(e) ; 
-            res.status(500).json({Error : "internal server error"})
-         }
-        
+                initRes.service_id = packageServiceDTO.service_id;
+
+                initRes.package_id = packageServiceDTO.package_id;
+
+                initRes.created_at = new Date();
+
+                initRes.updated_at = new Date();
+
+                const createRes = await this.packageServiceService.insertPackageService(initRes);
+
+                res.status(200).json(createRes);
+            } else {
+                res.status(422).json({ Error: 'Unprocessable Entity ( invalid input ) ' });
+            }
+
+
+        } catch (e) {
+            console.log(e);
+            res.status(500).json({ Error: "internal server error" })
+        }
+
 
     }
 
@@ -48,26 +56,31 @@ export class PackageServiceController {
     @Put('/updateById')
     async updateServiceById(@Req() req: Request, @Res() res: Response, @Body() packageServiceDTO: packageServiceDTO): Promise<void> {
         try {
+            if (packageServiceDTO.package_type in packageServiceAllow || packageServiceDTO.package_type == null) {
+                const initRes = await initer(excludedKey, packageServiceDTO);
 
-            const initRes = await initer(excludedKey, packageServiceDTO);
+                initRes.service_id = packageServiceDTO.service_id;
 
-            initRes.service_id = packageServiceDTO.service_id ; 
-    
-            initRes.package_id = packageServiceDTO.package_id ; 
-    
-            initRes.updated_at = new Date() ;
+                initRes.package_id = packageServiceDTO.package_id;
 
-            const updateResult = await this.packageServiceService.updateById(initRes);
+                initRes.updated_at = new Date();
 
-            if (!updateResult) {
+                const updateResult = await this.packageServiceService.updateById(initRes);
 
-                res.status(404).json({ Error: "PackageService not found" });
+                if (!updateResult) {
 
-            } else {
-                console.log(updateResult)
-                res.status(200).json(updateResult);
+                    res.status(404).json({ Error: "PackageService not found" });
+
+                } else {
+                    console.log(updateResult)
+                    res.status(200).json(updateResult);
+
+                }
+            }else{
+                res.status(422).json({ Error: "Unprocessable Entity ( invalid input )" });
 
             }
+
 
         } catch (e) {
 
@@ -82,10 +95,10 @@ export class PackageServiceController {
     async deleteServiceById(@Req() req: Request, @Res() res: Response, @Body() packageServiceDTO: packageServiceDTO): Promise<void> {
         try {
 
-            const initRes = await initer(excludedKey, packageServiceDTO) ;
-            initRes.service_id = packageServiceDTO.service_id ; 
-            initRes.package_id = packageServiceDTO.package_id ; 
-            const delRes = await this.packageServiceService.deleteById(initRes) ;
+            const initRes = await initer(excludedKey, packageServiceDTO);
+            initRes.service_id = packageServiceDTO.service_id;
+            initRes.package_id = packageServiceDTO.package_id;
+            const delRes = await this.packageServiceService.deleteById(initRes);
 
             res.status(200).json(delRes);
 
@@ -99,22 +112,22 @@ export class PackageServiceController {
     }
 
     @Get('/getSearch')
-    async getFindByEntity(@Req() req: Request, @Res() res: Response , @Body() packageServiceDTO: packageServiceDTO ): Promise<void> {
-        try{
-            const initRes = await initer(excludedKey , packageServiceDTO) ;
-            initRes.service_id = packageServiceDTO.service_id ;
-            initRes.package_id = packageServiceDTO.package_id ;
-    
-           const findResult = await  this.packageServiceService.searchBy(initRes) ;
-            res.status(200).json(findResult) ; 
-        }catch(e){
-            console.log(e)  ;
-            res.status(500).json({Error:'internal server error'}) ; 
+    async getFindByEntity(@Req() req: Request, @Res() res: Response, @Body() packageServiceDTO: packageServiceDTO): Promise<void> {
+        try {
+            const initRes = await initer(excludedKey, packageServiceDTO);
+            initRes.service_id = packageServiceDTO.service_id;
+            initRes.package_id = packageServiceDTO.package_id;
+
+            const findResult = await this.packageServiceService.searchBy(initRes);
+            res.status(200).json(findResult);
+        } catch (e) {
+            console.log(e);
+            res.status(500).json({ Error: 'internal server error' });
         }
-        
+
     }
 
-    
+
 }
 async function initer(notIncludeList: string[], userInputDTO: packageServiceDTO): Promise<packageServiceEntity> {
     const exportedObject = new packageServiceEntity();

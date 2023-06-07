@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthMiddleWareModule } from './auth-middle-ware/auth-middle-ware.module';
@@ -38,6 +38,7 @@ import { PackageServiceModule } from './package_service/package_service.module';
 import { TopupServiceController } from './topup_service/topup_service.controller';
 import { TopupServiceService } from './topup_service/topup_service.service';
 import { TopupServiceModule } from './topup_service/topup_service.module';
+import { AuthMiddleWare } from './middleware/firebaseAuthen.middleware';
 
 
 // appServiceMapEntity,
@@ -51,7 +52,7 @@ import { TopupServiceModule } from './topup_service/topup_service.module';
 //                 appServiceMapEntity,
 
 @Module({
-  imports: [AuthMiddleWareModule,
+  imports: [ 
     TypeOrmModule.forRoot(typrOrmConfig),
     TypeOrmModule.forFeature([  appServiceMapEntity,
                                 app_auth,
@@ -62,9 +63,21 @@ import { TopupServiceModule } from './topup_service/topup_service.module';
                                 transactionRunnerEntity,
                                 transactionEntity,]),
             ],
-
+          
   controllers: [AppController, AppAuthController, ProviderController, ServiceController, TransactionController, AppServiceMapController, TransactionRunnerController, PackageServiceController, TopupServiceController ], 
   providers: [AppService, AppAuthService, ProviderService, ServiceService, TransactionService , AppServiceMapService, TransactionRunnerService, PackageServiceService, TopupServiceService],
-
 })
-export class AppModule { }
+// export class AppModule implements NestModule
+// {
+//   configure(consumer: MiddlewareConsumer) {
+//      consumer
+//      .apply(AuthMiddleWare).forRoutes('*');
+//   }
+//  }
+
+
+ export class AppModule 
+{
+ 
+}
+

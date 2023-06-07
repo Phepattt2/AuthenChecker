@@ -24,8 +24,11 @@ export class ProviderController {
             initRes.created_at = new Date();
     
             const createRes = await this.providerService.insertProvider(initRes);
-
-            res.status(200).json(createRes)
+            if(createRes){
+                res.status(200).json(createRes)
+            }else{
+                res.status(422).json({Erorr:"Unprocessable Entity ( duplicate Provider name )"})
+            }
 
 
         }catch(e) {
