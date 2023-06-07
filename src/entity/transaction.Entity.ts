@@ -3,6 +3,7 @@ import { UUID } from 'typeorm/driver/mongodb/bson.typings';
 import { app_auth } from './app-auth.Entity';
 import { serviceEntity } from './service.Entity';
 import { generateKey } from 'crypto';
+import { StringArraySupportOption } from 'prettier';
 
 @Entity('transaction')
 
@@ -62,7 +63,7 @@ export class transactionEntity {
     cashier_id: string;
 
     @Column({ type: 'json', nullable: true })
-    txn_detail: JSON;
+    txn_detail: Record<string,any>;
 
     @Column({ type: 'integer', nullable: true })
     amount: number;

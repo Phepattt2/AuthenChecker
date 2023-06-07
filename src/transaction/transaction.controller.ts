@@ -77,6 +77,15 @@ export class TransactionController {
         }
 
     }
+
+    @Get('/getSearch')
+    async getFindByEntity(@Req() req: Request, @Res() res: Response , @Body() transactionDTO: transactionDTO ): Promise<void> {
+        const initRes = await initer(excludedKey , transactionDTO) ;
+        initRes.ref_id = transactionDTO.ref_id ;
+
+       const findResult = await  this.transactionService.searchBy(initRes) ;
+        res.status(200).json(findResult) ; 
+    }
 }
 
 
