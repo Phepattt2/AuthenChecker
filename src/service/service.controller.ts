@@ -110,6 +110,14 @@ export class ServiceController {
         }
     }
 
+    @Get('/getSearch')
+    async getFindByEntity(@Req() req: Request, @Res() res: Response , @Body() serviceDTO: serviceDTO ): Promise<void> {
+        const initRes = await initer(excludedKey , serviceDTO) ;
+        initRes.service_id = serviceDTO.service_id ;
+
+       const findResult = await  this.serviceService.searchBy(initRes) ;
+        res.status(200).json(findResult) ; 
+    }
 
 
 

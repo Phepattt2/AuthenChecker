@@ -80,6 +80,16 @@ export class TopupServiceService {
             return e;
         }
     }
+
+    async searchBy(entity : topUpServiceEntity): Promise<topUpServiceEntity[]> {
+        const found = await this.topUpServiceRepository.findBy(entity) ; 
+            if (found) {
+                return found
+            } else {
+                return null ; 
+            }
+    }
+
 }
 
 async function initerUpdate(notIncludeList: string[], userInput: topUpServiceEntity, baseInput: topUpServiceEntity): Promise<topUpServiceEntity> {

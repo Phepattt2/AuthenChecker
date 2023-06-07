@@ -82,6 +82,22 @@ export class ProviderController {
         }
     }
 
+    @Get('/getSearch')
+    async getFindByEntity(@Req() req: Request, @Res() res: Response , @Body() providerDTO: providerDTO ): Promise<void> {
+        try{
+            const initRes = await initer(excludedKey , providerDTO) ;
+            initRes.provider_code = providerDTO.provider_code ;
+    
+           const findResult = await  this.providerService.searchBy(initRes) ;
+            res.status(200).json(findResult) ; 
+        }catch(e){
+            console.log(e)  ;
+            res.status(500).json({Error:'internal server error'}) ; 
+        }
+        
+    }
+
+
 }
 
 async function initer(notIncludeList: string[], userInputDTO: providerDTO): Promise<providerEntity> {

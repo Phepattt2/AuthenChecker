@@ -72,6 +72,14 @@ export class PackageServiceService {
         }
     }
 
+    async searchBy(entity : packageServiceEntity): Promise<packageServiceEntity[]> {
+        const found = await this.packageServiceRepository.findBy(entity) ; 
+            if (found) {
+                return found
+            } else {
+                return null ; 
+            }
+    }
   
 
 

@@ -2,83 +2,92 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { providerEntity } from 'src/entity/provider.Entity';
 import { Repository } from 'typeorm';
-const excludedKey = ['provider_code'] 
+const excludedKey = ['provider_code']
 
 @Injectable()
 export class ProviderService {
     constructor(
         @InjectRepository(providerEntity)
-        private readonly providerRepository: Repository<providerEntity> ,
-    ){}
+        private readonly providerRepository: Repository<providerEntity>,
+    ) { }
 
-     async findAll() : Promise<providerEntity[]> {
-        return this.providerRepository.find()  ;
-     } 
+    async findAll(): Promise<providerEntity[]> {
+        return this.providerRepository.find();
+    }
 
-     async insertProvider(provider : providerEntity) : Promise<providerEntity> {
-        return this.providerRepository.save(provider) ; 
-     }
+    async insertProvider(provider: providerEntity): Promise<providerEntity> {
+        return this.providerRepository.save(provider);
+    }
 
-     async updateById(provider: providerEntity): Promise<providerEntity> {
-      try {
+    async updateById(provider: providerEntity): Promise<providerEntity> {
+        try {
 
-         const found = await this.providerRepository.findOneBy({ 'provider_code': provider.provider_code })
+            const found = await this.providerRepository.findOneBy({ 'provider_code': provider.provider_code })
 
-         if (found) {
+            if (found) {
 
-             const initRes = await initerUpdate(excludedKey, provider, found);
+                const initRes = await initerUpdate(excludedKey, provider, found);
 
-             return await this.providerRepository.save(initRes);
+                return await this.providerRepository.save(initRes);
 
-         } else {
-            console.log(found)
-             console.log('error provider not fonud')
-             return found;
+            } else {
+                console.log(found)
+                console.log('error provider not fonud')
+                return found;
 
-         }
-     } catch (e) {
+            }
+        } catch (e) {
 
-         console.log('error : ', e)
+            console.log('error : ', e)
 
-         return e;
+            return e;
 
-     }
-  }
+        }
+    }
 
-  async deleteById(provider_code: string): Promise<string> {
-   try {
-       const delRes = await this.providerRepository.createQueryBuilder() 
-       .delete() 
-       .where('provider_code = :value1' , {
-           value1 : provider_code,
-       })
-       .execute() ; 
+    async deleteById(provider_code: string): Promise<string> {
+        try {
+            const delRes = await this.providerRepository.createQueryBuilder()
+                .delete()
+                .where('provider_code = :value1', {
+                    value1: provider_code,
+                })
+                .execute();
 
-       console.log('delRes ' , delRes)
-       if(delRes.affected ==0 ) {
-           return "provider delete failed not found "
-       }
+            console.log('delRes ', delRes)
+            if (delRes.affected == 0) {
+                return "provider delete failed not found "
+            }
 
 
-       return "provider successfully deleted";
+            return "provider successfully deleted";
 
-   } catch (e) {
+        } catch (e) {
 
-       console.log('error : ', e)
+            console.log('error : ', e)
 
-       return e;
+            return e;
 
-   }
-}
+        }
+    }
+    async searchBy(entity : providerEntity): Promise<providerEntity[]> {
+        const found = await this.providerRepository.findBy(entity) ; 
+            if (found) {
+                return found
+            } else {
+                return null ; 
+            }
+    }
+
 
 
 }
 async function initerUpdate(notIncludeList: string[], userInput: providerEntity, baseInput: providerEntity): Promise<providerEntity> {
-   const exportedObject = baseInput;
-   for (var key in userInput) {
-       if (notIncludeList.includes(key) == false) {
-           exportedObject[key] = userInput[key];
-       }
-   }
-   return exportedObject
+    const exportedObject = baseInput;
+    for (var key in userInput) {
+        if (notIncludeList.includes(key) == false) {
+            exportedObject[key] = userInput[key];
+        }
+    }
+    return exportedObject
 }

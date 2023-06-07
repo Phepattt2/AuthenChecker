@@ -63,7 +63,7 @@ export class TransactionRunnerController {
 
             if (!updateResult) {
 
-                res.status(404).json({Error: "transaction runner not found"});
+                res.status(404).json({ Error: "transaction runner not found" });
 
             } else {
 
@@ -92,12 +92,18 @@ export class TransactionRunnerController {
     }
 
     @Get('/getSearch')
-    async getFindByEntity(@Req() req: Request, @Res() res: Response , @Body() transactionRunnerDTO: transactionRunnerDTO ): Promise<void> {
-        const initRes = await initer(excludedKey , transactionRunnerDTO) ;
-        initRes.runner_key = transactionRunnerDTO.runner_key ;
+    async getFindByEntity(@Req() req: Request, @Res() res: Response, @Body() transactionRunnerDTO: transactionRunnerDTO): Promise<void> {
+        try {
+            const initRes = await initer(excludedKey, transactionRunnerDTO);
+            initRes.runner_key = transactionRunnerDTO.runner_key;
 
-       const findResult = await  this.transactionRunnerService.searchBy(initRes) ;
-        res.status(200).json(findResult) ; 
+            const findResult = await this.transactionRunnerService.searchBy(initRes);
+            res.status(200).json(findResult);
+        } catch (e) {
+            console.log(e)
+            res.status(500).json({Error : 'Internal Server Error'});
+        }
+
     }
 }
 

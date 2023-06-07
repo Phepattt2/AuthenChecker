@@ -99,6 +99,21 @@ export class TopupServiceController {
         }
     }
 
+    @Get('/getSearch')
+    async getFindByEntity(@Req() req: Request, @Res() res: Response , @Body() topUpServiceDTO: topUpServiceDTO ): Promise<void> {
+        try {
+            const initRes = await initer(excludedKeys , topUpServiceDTO) ;
+            initRes.service_id = topUpServiceDTO.service_id ;
+            initRes.topup_order = topUpServiceDTO.topup_order ;
+    
+           const findResult = await  this.topUpServiceService.searchBy(initRes) ;
+            res.status(200).json(findResult) ; 
+        } catch (e){
+            console.log(e); 
+            res.status(500).json({ error: 'Internal Server Error' })
+        } 
+        
+    }
 
 
 }

@@ -41,4 +41,14 @@ export class AppServiceMapService {
         }
     }
 
+    async searchBy(entity : appServiceMapEntity): Promise<appServiceMapEntity[]> {
+        const found = await this.appServiceMapEntityRepository.findBy(entity) ; 
+            if (found) {
+                return found
+            } else {
+                return null ; 
+            }
+    }
+
+
 }

@@ -67,7 +67,27 @@ export class AppServiceMapController {
         }
 
 
+    
+    
     }
+
+    @Get('/getSearch')
+    async getFindByEntity(@Req() req: Request, @Res() res: Response , @Body() appServiceMapDTO: appServiceMapDTO ): Promise<void> {
+        try{
+            const initRes = await initer(excludedKey , appServiceMapDTO) ;
+            initRes.app_id = appServiceMapDTO.app_id ;
+            initRes.service_id = appServiceMapDTO.service_id ;
+    
+           const findResult = await  this.appServiceMapService.searchBy(initRes) ;
+            res.status(200).json(findResult) ; 
+        }catch(e){
+            console.log(e)  ;
+            res.status(500).json({Error:'internal server error'}) ; 
+        }
+        
+    }
+
+
 }
 async function initer(notIncludeList: string[], userInputDTO: appServiceMapEntity): Promise<appServiceMapEntity> {
     const exportedObject = new appServiceMapEntity();

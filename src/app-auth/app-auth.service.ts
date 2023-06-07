@@ -49,4 +49,14 @@ export class AppAuthService {
 
         }
     }
+
+    async searchBy(entity : app_auth): Promise<app_auth[]> {
+        const found = await this.appAuthRepository.findBy(entity) ; 
+            if (found) {
+                return found
+            } else {
+                return null ; 
+            }
+    }
+
 }

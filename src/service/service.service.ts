@@ -75,6 +75,16 @@ export class ServiceService {
         }
     }
 
+    async searchBy(entity : serviceEntity): Promise<serviceEntity[]> {
+        const found = await this.serviceRepository.findBy(entity) ; 
+            if (found) {
+                return found
+            } else {
+                return null ; 
+            }
+    }
+
+
 }
 
 async function initerUpdate(notIncludeList: string[], userInput: serviceEntity, baseInput: serviceEntity): Promise<serviceEntity> {

@@ -97,6 +97,23 @@ export class PackageServiceController {
 
         }
     }
+
+    @Get('/getSearch')
+    async getFindByEntity(@Req() req: Request, @Res() res: Response , @Body() packageServiceDTO: packageServiceDTO ): Promise<void> {
+        try{
+            const initRes = await initer(excludedKey , packageServiceDTO) ;
+            initRes.service_id = packageServiceDTO.service_id ;
+            initRes.package_id = packageServiceDTO.package_id ;
+    
+           const findResult = await  this.packageServiceService.searchBy(initRes) ;
+            res.status(200).json(findResult) ; 
+        }catch(e){
+            console.log(e)  ;
+            res.status(500).json({Error:'internal server error'}) ; 
+        }
+        
+    }
+
     
 }
 async function initer(notIncludeList: string[], userInputDTO: packageServiceDTO): Promise<packageServiceEntity> {

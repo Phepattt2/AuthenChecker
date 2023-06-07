@@ -107,6 +107,21 @@ export class AppAuthController {
 
     }
 
+    @Get('/getSearch')
+    async getFindByEntity(@Req() req: Request, @Res() res: Response , @Body() appAuthDTO: AppAuthDTO ): Promise<void> {
+        try{
+            const initRes = await initer(excludedKey , appAuthDTO) ;
+            initRes.app_id = appAuthDTO.app_id ;
+    
+           const findResult = await  this.appAuthService.searchBy(initRes) ;
+            res.status(200).json(findResult) ; 
+        }catch(e){
+            console.log(e)  ;
+            res.status(500).json({Error:'internal server error'}) ; 
+        }
+        
+    }
+
 }
 
 async function initer(notIncludeList: string[], userInputDTO: app_auth): Promise<app_auth> {
