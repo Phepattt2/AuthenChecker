@@ -16,25 +16,14 @@ export class TransactionRunnerService {
     ) { }
 
     async insertTransactionRunner(transactionRunner: transactionRunnerEntity): Promise<transactionRunnerEntity> {
-        try {
             return await this.transactionRunnerRepository.save(transactionRunner);
-        } catch (e) {
-            console.log('insert error : ', e)
-            return e
-        }
     }
 
     async findAll(): Promise<transactionRunnerEntity[]> {
-        try {
             return await this.transactionRunnerRepository.find();
-        } catch (e) {
-            console.log('error : ', e);
-            return e;
-        }
     }
 
     async updateById(transactionRunner: transactionRunnerEntity): Promise<transactionRunnerEntity> {
-        try {
             const found = await this.transactionRunnerRepository.findOneBy({ 'runner_key': transactionRunner.runner_key });
             if (found) {
                 const updatedFound = await initUpdater(excludedKey, transactionRunner, found);
@@ -44,27 +33,26 @@ export class TransactionRunnerService {
                 console.log('error transaction_runner not found');
                 return found
             }
-        } catch (e) {
-            console.log('error : ', e)
-            return transactionRunner;
-        }
     }
 
     async deleteById(runner_key: string): Promise<string> {
-        try {
-            if (await this.transactionRunnerRepository.findOneBy({ 'runner_key': runner_key })) {
+        const found  = await this.transactionRunnerRepository.findOneBy({ 'runner_key': runner_key })
+            if (found) {
                 await this.transactionRunnerRepository.delete(runner_key);
                 return "transaction_runner successfully deleted";
             } else {
                 return "transaction_runner delete failed not found";
             }
-        } catch (e) {
-            console.log('error : ', e);
-
-            return e;
-        }
     }
 
+    async findBy(entity : transactionRunnerEntity): Promise<transactionRunnerEntity[]> {
+        const found = await this.transactionRunnerRepository.findBy(entity) ; 
+            if (found) {
+                return found
+            } else {
+                return null ; 
+            }
+    }
 
 }
 

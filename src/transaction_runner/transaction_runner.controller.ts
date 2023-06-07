@@ -91,6 +91,14 @@ export class TransactionRunnerController {
         }
     }
 
+    @Get('/getFind')
+    async getFindByEntity(@Req() req: Request, @Res() res: Response , @Body() transactionRunnerDTO: transactionRunnerDTO ): Promise<void> {
+        const initRes = await initer(excludedKey , transactionRunnerDTO) ;
+        initRes.runner_key = transactionRunnerDTO.runner_key ;
+
+       const findResult = await  this.transactionRunnerService.findBy(initRes) ;
+        res.status(200).json(findResult) ; 
+    }
 }
 
 async function initer(notIncludeList: string[], userInputDTO: transactionRunnerDTO): Promise<transactionRunnerEntity> {

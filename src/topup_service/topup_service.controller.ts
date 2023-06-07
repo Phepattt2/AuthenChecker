@@ -34,19 +34,19 @@ export class TopupServiceController {
 
             const initRes = await initer(excludedKeys,topUpService) ; 
             
-            initRes.updated_at = new Date() ;
+            initRes.service_id = topUpService.service_id; 
+            initRes.topup_order = topUpService.topup_order ; 
 
             const updateRes = await this.topUpServiceService.updateById(initRes);
 
             if(!updateRes){
-                res.status(404).json(`Error: service not found`);
+                res.status(404).json(`Error: TopUpService not found`);
                     
                 }else{
                     res.status(200).json(updateRes);
     
                 }
 
-            res.status(200).json(updateRes);
 
         } catch (e) {
 

@@ -36,10 +36,12 @@ export class TopupServiceService {
 
     async updateById(topUpService: topUpServiceEntity): Promise<topUpServiceEntity> {
         try {
+            console.log(topUpService , topUpService.service_id  , topUpService.topup_amount)
 
-            const found = await this.topUpServiceRepository.findOneBy({ 'service_id': topUpService.service_id, 'topup_order': topUpService.topup_order })
-
+            const found = await this.topUpServiceRepository.findOneBy({service_id:topUpService.service_id , topup_order : topUpService.topup_order})
+            console.log(found)
             if (found) {
+
 
                 found.topup_amount = topUpService.topup_amount;
 
@@ -66,10 +68,10 @@ export class TopupServiceService {
     async deleteById(topUpService: topUpServiceEntity): Promise<string> {
         try {
             const delRes = await this.topUpServiceRepository.createQueryBuilder()
-            .delete()
-            .where('service_id = :value1 AND topup_order = :value2' , {value1 : topUpService.service_id ,value2 : topUpService.topup_order})
-            .execute();
-            if(delRes.affected == 0 ){
+                .delete()
+                .where('service_id = :value1 AND topup_order = :value2', { value1: topUpService.service_id, value2: topUpService.topup_order })
+                .execute();
+            if (delRes.affected == 0) {
                 return "topUpService delete failled not found"
             }
             return "topUpService successfully deleted"
