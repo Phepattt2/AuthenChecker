@@ -48,36 +48,4 @@ export class AuthMiddleWare implements NestMiddleware {
         }
     }
 
-
-    // // no test ! 
-    // protectedAppcheck(request, response, next) {
-    //     try {
-    //         const appCheckToken = request.header('X-Firebase-AppCheck');
-
-    //         if (!appCheckToken) {
-    //             response.status(401);
-
-    //         }
-
-    //         try {
-    //             const appCheckClaims = getAppCheck().verifyToken(appCheckToken);
-    //             // If verifyToken() succeeds, continue with the next middleware
-    //             // function in the stack.
-
-
-    //         } catch (err) {
-    //             response.status(401);
-
-    //         }
-
-
-
-    //         const tokenData = request.headers
-    //         console.log(tokenData)
-    //         const decodedVal = admin.auth().verifyIdToken(tokenData, true);
-    //     }
-    //     catch (err) {
-    //         console.log(err)
-    //     }
-    // }
 }

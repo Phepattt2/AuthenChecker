@@ -1,7 +1,6 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AuthMiddleWareModule } from './auth-middle-ware/auth-middle-ware.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typrOrmConfig } from './config/typeorm.config'
 import { testEntity } from './entity/test.Entity';
@@ -39,6 +38,7 @@ import { TopupServiceController } from './topup_service/topup_service.controller
 import { TopupServiceService } from './topup_service/topup_service.service';
 import { TopupServiceModule } from './topup_service/topup_service.module';
 import { AuthMiddleWare } from './middleware/firebaseAuthen.middleware';
+import {  firebaseAppCheckMiddleware } from './middleware/firebaseAppcheck.middleware';
 
 
 // appServiceMapEntity,
@@ -67,17 +67,19 @@ import { AuthMiddleWare } from './middleware/firebaseAuthen.middleware';
   controllers: [AppController, AppAuthController, ProviderController, ServiceController, TransactionController, AppServiceMapController, TransactionRunnerController, PackageServiceController, TopupServiceController ], 
   providers: [AppService, AppAuthService, ProviderService, ServiceService, TransactionService , AppServiceMapService, TransactionRunnerService, PackageServiceService, TopupServiceService],
 })
-// export class AppModule implements NestModule
-// {
-//   configure(consumer: MiddlewareConsumer) {
-//      consumer
-//      .apply(AuthMiddleWare).forRoutes('*');
-//   }
-//  }
-
-
- export class AppModule 
+export class AppModule implements NestModule
 {
+  configure(consumer: MiddlewareConsumer) {
+     consumer
+     .apply(AuthMiddleWare).forRoutes('*');
+     consumer
+     .apply(firebaseAppCheckMiddleware).forRoutes('*');
+  }
+ }
+
+
+//  export class AppModule 
+// {
  
-}
+// }
 

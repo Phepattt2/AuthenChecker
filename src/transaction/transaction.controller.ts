@@ -16,7 +16,6 @@ export class TransactionController {
     @Get('/getAllTransactions')
     async getAllTransaction(@Req() req: Request, @Res() res: Response): Promise<void> {
         try {
-            console.log('recived get ')
             const transaction = await this.transactionService.findAll();
             res.status(200).json(transaction)
         } catch (err) {

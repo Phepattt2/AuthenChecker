@@ -1,0 +1,18 @@
+app_auth 
+service
+transaction 
+provider 
+
+will have no delete query
+
+-------------------------------------------
+
+
+fix top up ? 
+topup_order -> index for each service_id 
+
+ส่งเป็นชุดทำ topup_order เรียง inedx
+
+-----------------<<><>>---------------------
+
+transaction have only getAll() 

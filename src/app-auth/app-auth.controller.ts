@@ -30,7 +30,7 @@ export class AppAuthController {
                 const initRes = await initer(excludedKey, newApp);
 
                 initRes.app_id = randomUUID();
-                initRes.app_secret = bytesToBase64(randomBytes(63));
+                initRes.app_secret = bytesToBase64(randomBytes(32));
                 initRes.created_at = new Date();
                 initRes.updated_at = new Date();
 
@@ -42,7 +42,7 @@ export class AppAuthController {
             else {
 
                 console.log('invalid input app_status');
-                
+
                 res.status(422).json({Error:'Unprocessable Entity ( invalid input )'});
 
             }
