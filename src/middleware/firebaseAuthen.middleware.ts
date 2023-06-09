@@ -36,7 +36,6 @@ export class AuthMiddleWare implements NestMiddleware {
                 }).catch((e) => {
                     res.status(401)
                     res.send({ Error: 'status Authorized 401 error invalid token' });
-                    next();
                 })
             }
         }
@@ -44,7 +43,6 @@ export class AuthMiddleWare implements NestMiddleware {
             console.log(e) ; 
             res.status(401)
             res.send({ Error: `status Authorized 401 error` });
-            next();
         }
     }
 

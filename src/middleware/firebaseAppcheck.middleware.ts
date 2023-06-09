@@ -34,7 +34,6 @@ export class firebaseAppCheckMiddleware implements NestMiddleware {
         }
         catch (err) {
             res.status(500).json({ Error: 'Internal server error' })
-            next();
 
         }
     }
