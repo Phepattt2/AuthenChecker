@@ -70,10 +70,10 @@ import {  firebaseAppCheckMiddleware } from './middleware/firebaseAppcheck.middl
 export class AppModule implements NestModule
 {
   configure(consumer: MiddlewareConsumer) {
-     consumer
-     .apply(AuthMiddleWare).forRoutes('*');
-     consumer
-     .apply(firebaseAppCheckMiddleware).forRoutes('*');
+    //  consumer
+    //  .apply(AuthMiddleWare).forRoutes('*');
+    //  consumer
+    //  .apply(firebaseAppCheckMiddleware).forRoutes('*');
   }
  }
 

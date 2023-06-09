@@ -21,9 +21,9 @@ export class ProviderController {
         try{
             const initRes = await initer(excludedKey, newProvider) 
             initRes.provider_code = newProvider.provider_code  ;
-            initRes.created_at = new Date();
     
             const createRes = await this.providerService.insertProvider(initRes);
+
             if(createRes){
                 res.status(200).json(createRes)
             }else{
@@ -51,8 +51,11 @@ export class ProviderController {
             const updateResult = await this.providerService.updateById(intiRes);
 
             if (!updateResult) {
-
-                res.status(404).json({ Error: "Provider not found" });
+                if( updateResult == null) {
+                    res.status(422).json({Erorr:"Unprocessable Entity ( duplicate Provider name )"});
+                }else {
+                    res.status(404).json({ Error: "Provider not found" });
+                }
 
             } else {
                 console.log(updateResult)

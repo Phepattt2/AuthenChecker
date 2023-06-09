@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { providerEntity } from 'src/entity/provider.Entity';
 import { Repository } from 'typeorm';
-const excludedKey = ['provider_code']
+const excludedKey = ['provider_code' , 'created_at']
 
 @Injectable()
 export class ProviderService {
@@ -16,33 +16,36 @@ export class ProviderService {
     }
 
     async insertProvider(provider: providerEntity): Promise<providerEntity> {
-        const sameNameProvider  = this.providerRepository.findBy({provider_name:provider.provider_name}) 
-        if( sameNameProvider ){
-            return null ; 
-        }else { 
+        const sameNameProvider = this.providerRepository.findBy({ provider_name: provider.provider_name })
+        if ((await sameNameProvider).length == 0) {
+            provider.created_at = new Date() ; 
             return this.providerRepository.save(provider);
-
+        } else {
+            console.log(sameNameProvider)
+            return null;
         }
 
     }
 
     async updateById(provider: providerEntity): Promise<providerEntity> {
         try {
+            const sameNameProvider = this.providerRepository.findBy({ provider_name: provider.provider_name })
+            console.log('sameNameProvider' , (await sameNameProvider).length)
+            if ((await sameNameProvider).length == 0) {
+                const found = await this.providerRepository.findOneBy({ 'provider_code': provider.provider_code })
 
-            const found = await this.providerRepository.findOneBy({ 'provider_code': provider.provider_code })
+                if (found) {
+                    const initRes = await initerUpdate(excludedKey, provider, found);
+                    return await this.providerRepository.save(initRes);
 
-            if (found) {
-
-                const initRes = await initerUpdate(excludedKey, provider, found);
-
-                return await this.providerRepository.save(initRes);
-
-            } else {
-                console.log(found)
-                console.log('error provider not fonud')
-                return found;
-
+                } else {
+                    console.log('error provider not fonud')
+                    return found;
+                }
+            }else {
+                return null ; 
             }
+
         } catch (e) {
 
             console.log('error : ', e)
@@ -77,13 +80,13 @@ export class ProviderService {
 
         }
     }
-    async searchBy(entity : providerEntity): Promise<providerEntity[]> {
-        const found = await this.providerRepository.findBy(entity) ; 
-            if (found) {
-                return found
-            } else {
-                return null ; 
-            }
+    async searchBy(entity: providerEntity): Promise<providerEntity[]> {
+        const found = await this.providerRepository.findBy(entity);
+        if (found) {
+            return found
+        } else {
+            return null;
+        }
     }
 
 

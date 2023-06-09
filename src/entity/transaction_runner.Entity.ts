@@ -5,7 +5,7 @@ import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn , PrimaryGenerated
 
 export class transactionRunnerEntity {
     
-    @PrimaryColumn({ type: 'character varying' , length : 10 })
+    @PrimaryColumn({ length: 10, type: 'character varying', nullable: false , generated : false})
     runner_key: string;
 
     @Column({ type: 'integer' , nullable : false  })

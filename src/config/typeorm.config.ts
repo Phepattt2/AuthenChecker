@@ -16,7 +16,7 @@ export const typrOrmConfig: TypeOrmModuleOptions = {
         port: 5432,
         username: 'postgres',
         password: 'Piito#1911',
-        database: 'temp2',
+        database: 'test_local_db',
         entities: [
                 appServiceMapEntity,
                 app_auth,
@@ -27,7 +27,7 @@ export const typrOrmConfig: TypeOrmModuleOptions = {
                 transactionRunnerEntity,
                 transactionEntity,
         ],
-        synchronize: false,
+        synchronize: true,
 }
 
 console.log('databased init  -- connecnt started --'); 

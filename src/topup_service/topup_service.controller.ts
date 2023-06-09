@@ -3,6 +3,7 @@ import { topUpServiceEntity } from 'src/entity/topup_service.Entity';
 import { Request, Response } from 'express';
 import { TopupServiceService } from './topup_service.service';
 import { topUpServiceDTO } from 'src/dto/topUpService.dto';
+import { topUpServiceListDTO } from 'src/dto/topUpServiceList.dto';
 const excludedKeys = ['service_id', 'topup_order', 'updated_at'];
 
 @Controller('topup-service')
@@ -77,27 +78,73 @@ export class TopupServiceController {
         }
     }
 
-    @Post('/createTopUPService')
-    @HttpCode(HttpStatus.CREATED)
-    async createTopUPService(@Req() req: Request, @Res() res: Response, @Body() topUpService: topUpServiceDTO): Promise<void> {
+
+    @Delete('/deleteByIdOrder')
+    async deleteTopUpServiceByIdOrder(@Req() req: Request, @Res() res: Response, @Body() topUpServiceDTO: topUpServiceDTO): Promise<void> {
         try {
-            // init value in columns 
-            const initRes = await initer(excludedKeys, topUpService);
-            initRes.updated_at = new Date();
-            initRes.service_id = topUpService.service_id;
-            initRes.topup_order = topUpService.topup_order;
-            const insertRes = await this.topUpServiceService.insertTopUpService(initRes);
 
-            res.status(200).json(insertRes);
+            const initRes = await initer(excludedKeys, topUpServiceDTO);
+            initRes.service_id = topUpServiceDTO.service_id;
+            initRes.topup_order = topUpServiceDTO.topup_order;
+            const delRes = await this.topUpServiceService.deleteByIdOrder(initRes);
 
-        } catch (err) {
+            res.status(200).json(delRes);
 
-            console.log(err);
+        } catch (e) {
 
-            res.status(500).json({ error: 'Internal Server Error' })
+            console.log(e);
+
+            res.status(500).json({ error: 'Internal Server Error' });
 
         }
     }
+
+
+
+    @Post('/createTopUPService')
+    @HttpCode(HttpStatus.CREATED)
+    async createTopUPService(@Req() req: Request, @Res() res: Response, @Body() topUpService: topUpServiceDTO ): Promise<void> {
+        try {
+            // init value in columns 
+            const initRes = await initer(excludedKeys, topUpService);
+            initRes.service_id = topUpService.service_id;
+            const insertRes = await this.topUpServiceService.insertTopUpService(initRes);
+            if (insertRes === null) {
+                res.status(422).json({ Error: "Unprocessable Entity ( invalid data )" });
+            }
+            else {
+                res.status(200).json(insertRes);
+            }
+
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({ error: 'Internal Server Error' })
+        }
+    }
+
+
+    @Post('/createTopUPServiceByList')
+    @HttpCode(HttpStatus.CREATED)
+    async createTopUPServiceByList(@Req() req: Request, @Res() res: Response, @Body() topUpServiceList: topUpServiceListDTO ): Promise<void> {
+        try {
+            // init value in columns 
+            const insertRes = await this.topUpServiceService.insertTopUpServiceList(topUpServiceList);
+            if (insertRes == null) {
+                res.status(422).json({ Error: "Unprocessable Entity ( invalid data )" });
+            }
+            else if( insertRes == 'insert success but duplicate' || insertRes == 'insert success' ){
+                res.status(200).json(insertRes);
+            }
+            
+
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({ error: 'Internal Server Error' })
+        }
+    }
+
+
+
 
     @Get('/getSearch')
     async getFindByEntity(@Req() req: Request, @Res() res: Response, @Body() topUpServiceDTO: topUpServiceDTO): Promise<void> {

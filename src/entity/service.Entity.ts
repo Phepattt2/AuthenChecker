@@ -4,11 +4,10 @@ import { providerEntity } from "./provider.Entity";
 @Entity('service')
 export class serviceEntity {
     // @PrimaryGeneratedColumn()
-    @PrimaryColumn({generated : false})
-    service_id: number;
+    @PrimaryColumn({generated : true})
+    service_id:  number;
 
     @Column({ type: 'character varying', length: 30, unique: true , nullable : false })
-    
     service_code: string;
   
     @Column({ type: 'smallint' , nullable : false})
@@ -22,15 +21,16 @@ export class serviceEntity {
   
     @Column({ type: 'smallint', nullable : false })
     service_status: number;
-    
+
+    @Column({ type: 'json', nullable : true })
+    service_config: Record<string,any>;
+
     // FK 
     @ManyToOne(() => providerEntity , {eager : true , cascade : true , onDelete : "CASCADE" })
     @JoinColumn({ name: 'provider_code' })
     
     provider_code: string;
 
-    @Column({ type: 'smallint', default: 0 , nullable : false  })
-    editable_amount: number;
   
     @Column({ type: 'character varying', length: 50 , nullable : false })
     provider_service_id: string;

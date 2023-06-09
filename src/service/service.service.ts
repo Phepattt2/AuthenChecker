@@ -15,7 +15,15 @@ export class ServiceService {
         ,
     ) { }
 
+    async getLastestTime(): Promise<Date> {
+        const latestTime = new Date() ;
+        return latestTime;
+    }
+
     async insertService(service: serviceEntity): Promise<serviceEntity> {
+        
+        service.created_at = new Date();
+        service.latest_fee_at = await this.getLastestTime() ;
         return await this.serviceRepository.save(service);
     }
 

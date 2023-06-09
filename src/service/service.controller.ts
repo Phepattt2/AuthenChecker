@@ -73,7 +73,10 @@ export class ServiceController {
     @Put('/updateById')
     async updateServiceById(@Req() req: Request, @Res() res: Response, @Body() service: serviceDTO): Promise<void> {
         try {
-            if (service.service_status in serviceStatusAllowed && service.require_calfee in requireCalfeeAllowed) {
+            if ((service.service_status in serviceStatusAllowed || service.service_status == null )
+                && (service.require_calfee in requireCalfeeAllowed || service.require_calfee == null)
+                && (service.service_type in serviceTypeAllowed || service.service_type == null)) {
+
 
                 const intiRes = await initer(excludedKey, service);
                 intiRes.service_id = service.service_id;
@@ -86,6 +89,7 @@ export class ServiceController {
 
                 }
             }else {
+                console.log(service)
                 res.status(422).json({Error : "Unprocessable Entity ( invalid input )"});
             }
 
