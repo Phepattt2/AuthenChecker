@@ -5,6 +5,7 @@ import { IntegerType, Repository } from 'typeorm';
 import { ServiceService } from './service.service';
 import { serviceDTO } from 'src/dto/service.dto';
 import { Response, Request } from 'express';
+import { fireStoreDB } from 'src/middleware/firebaseAuthen.middleware';
 
 const excludedKey = ['service_id', 'created_at', 'latest_fee_at']
 const serviceStatusAllowed = [0, 1];
@@ -63,6 +64,30 @@ export class ServiceController {
             const getRes = await this.serviceService.findAll()
 
             res.status(200).json(getRes)
+
+        } catch (err) {
+
+            console.log(err);
+
+            res.status(500).json({ error: 'Internal Server Error' })
+
+        }
+    }
+
+    @Get('/getUsers')
+    async getDataBaseUsers (@Req() req: Request, @Res() res: Response): Promise<void> {
+        try {
+            const db = fireStoreDB
+            const userSnap = await db.collection('Users').get() ; 
+            const userData = await userSnap.docs.map(doc => {
+                res.status(200).json( {
+                    uid : doc.id , 
+                    ...doc.data() 
+                })
+            })
+           
+            
+
 
         } catch (err) {
 

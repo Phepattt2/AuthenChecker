@@ -4,12 +4,6 @@ import * as admin from 'firebase-admin';
 import * as fs from 'fs';
 import * as path from 'path';
 
-
-
-const { getAppCheck } = require("firebase-admin/app-check");
-
-console.log(__dirname)
-
 const pathxx = __dirname + './../../src/config/'
 const filePath = path.join(pathxx, 'serviceAccountKey.json');
 const jsonData = fs.readFileSync(filePath, 'utf8');
@@ -18,8 +12,10 @@ const serviceAccountData = data.serviceAccount;
 
 admin.initializeApp({
     // serviceAcc
-    credential: admin.credential.cert(serviceAccountData)
-});
+    credential: admin.credential.cert(serviceAccountData),
+} );
+
+export const fireStoreDB = admin.firestore() ; 
 
 @Injectable()
 
