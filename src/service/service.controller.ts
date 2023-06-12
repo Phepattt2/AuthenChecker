@@ -22,16 +22,14 @@ export class ServiceController {
 
         try {
 
-            if (service.service_status in serviceStatusAllowed && service.require_calfee in requireCalfeeAllowed && service.service_type in serviceTypeAllowed ) {
+            if (service.service_status in serviceStatusAllowed 
+                && service.require_calfee in requireCalfeeAllowed 
+                && service.service_type in serviceTypeAllowed ) {
 
                 const resInit = await initer(excludedKey, service)
 
                 //generate key
                 resInit.service_id = service.service_id;
-
-                resInit.created_at = new Date();
-
-                resInit.latest_fee_at = new Date();
 
                 const insertRes = await this.serviceService.insertService(resInit);
 

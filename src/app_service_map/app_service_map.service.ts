@@ -18,6 +18,7 @@ export class AppServiceMapService {
     }
 
     async insertAppServiceMap(appService: appServiceMapEntity): Promise<appServiceMapEntity> {
+        appService.created_at = new Date();
         return await this.appServiceMapEntityRepository.save(appService);
     }
 

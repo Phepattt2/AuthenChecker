@@ -3,10 +3,11 @@ import { PackageServiceService } from './package_service.service';
 import { packageServiceEntity } from 'src/entity/package_service.Entity';
 import { packageServiceDTO } from 'src/dto/package_service.dto';
 import { Response, Request } from 'express';
+import { type } from 'os';
 
 const excludedKey = ['service_id', 'package_id', 'created_at', 'updated_at'];
+const package_validity_unit_List = ['second', 'minute', 'hour', 'day', 'month', 'year'];
 const packageServiceAllow = [1, 2, 3];
-
 @Controller('package-service')
 
 export class PackageServiceController {
@@ -25,22 +26,24 @@ export class PackageServiceController {
 
     async createPackageService(@Req() req: Request, @Res() res: Response, @Body() packageServiceDTO: packageServiceDTO): Promise<void> {
         try {
-            if (packageServiceDTO.package_type in packageServiceAllow || packageServiceDTO.package_type == null) {
+            console.log(packageServiceAllow.includes(Number(packageServiceDTO.package_type)))
+            if (packageServiceAllow.includes(Number(packageServiceDTO.package_type))) {
+
                 const initRes = await initer(excludedKey, packageServiceDTO);
 
                 initRes.service_id = packageServiceDTO.service_id;
 
                 initRes.package_id = packageServiceDTO.package_id;
 
-                initRes.created_at = new Date();
-
-                initRes.updated_at = new Date();
-
                 const createRes = await this.packageServiceService.insertPackageService(initRes);
 
-                res.status(200).json(createRes);
+                if (createRes) {
+                    res.status(200).json(createRes);
+                } else {
+                    res.status(422).json({ Error: 'Unprocessable Entity ( duplicate )' })
+                }
             } else {
-                res.status(422).json({ Error: 'Unprocessable Entity ( invalid input ) ' });
+                res.status(422).json({ Error: 'Unprocessable Entity ( invalid input )' });
             }
 
 
@@ -76,7 +79,7 @@ export class PackageServiceController {
                     res.status(200).json(updateResult);
 
                 }
-            }else{
+            } else {
                 res.status(422).json({ Error: "Unprocessable Entity ( invalid input )" });
 
             }

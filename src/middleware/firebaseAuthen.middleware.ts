@@ -29,7 +29,7 @@ export class AuthMiddleWare implements NestMiddleware {
         try {
             const tokenData = req.headers.authorization;
 
-            if (tokenData.startsWith('Bearer')) {
+            if ( tokenData.startsWith('Bearer')) {
                 const token = tokenData.split(' ')[1];
                 admin.auth().verifyIdToken(token).then(async (res) => {
                     next();

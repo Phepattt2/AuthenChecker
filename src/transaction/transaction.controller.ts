@@ -29,10 +29,10 @@ export class TransactionController {
     @HttpCode(HttpStatus.CREATED)
 
     async createTransaction(@Req() req: Request, @Res() res: Response, @Body() newTransaction: transactionDTO): Promise<void> {
-
         try {
             if (  newTransaction.txn_status in txn_statusAllow ){
                 const setEntity = await initer(excludedKey, newTransaction)
+                // database auto generate ref_id
                 const res_data = await this.transactionService.insertTransaction(setEntity);
                 res.status(200).json(res_data)
             }else{

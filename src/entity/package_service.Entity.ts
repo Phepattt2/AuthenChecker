@@ -28,7 +28,7 @@ export class packageServiceEntity {
     @Column({type:'character varying' ,length : 10 , nullable : false})
     package_validity_unit : string ; 
     
-    @Column({type:'smallint' , nullable : false})
+    @Column({type:'smallint' , nullable : true})
     package_type : number ; 
     
     @CreateDateColumn({ nullable : false , type : 'timestamp with time zone'})

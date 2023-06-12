@@ -27,7 +27,7 @@ export class ProviderController {
             if(createRes){
                 res.status(200).json(createRes)
             }else{
-                res.status(422).json({Erorr:"Unprocessable Entity ( duplicate Provider name )"})
+                res.status(422).json({Erorr:"Unprocessable Entity ( duplicate Provider's Data )"})
             }
 
 

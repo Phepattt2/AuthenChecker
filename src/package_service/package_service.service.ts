@@ -12,9 +12,18 @@ export class PackageServiceService {
         ,
     ) { }
 
-    async insertPackageService(transaction: packageServiceEntity): Promise<packageServiceEntity> {
+    async insertPackageService(packageService: packageServiceEntity): Promise<packageServiceEntity> {
+       
+        const duplicate = await this.packageServiceRepository.findOneBy({ package_id : packageService.package_id})
+        if(!duplicate){
+            packageService.created_at = new Date();
 
-        return await this.packageServiceRepository.save(transaction);
+            packageService.updated_at = new Date();
+    
+            return await this.packageServiceRepository.save(packageService);
+        }else {
+            return null ; 
+        }
 
     }
 

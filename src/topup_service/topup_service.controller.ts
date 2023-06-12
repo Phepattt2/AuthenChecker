@@ -103,7 +103,7 @@ export class TopupServiceController {
 
     @Post('/createTopUPService')
     @HttpCode(HttpStatus.CREATED)
-    async createTopUPService(@Req() req: Request, @Res() res: Response, @Body() topUpService: topUpServiceDTO ): Promise<void> {
+    async createTopUPService(@Req() req: Request, @Res() res: Response, @Body() topUpService: topUpServiceDTO): Promise<void> {
         try {
             // init value in columns 
             const initRes = await initer(excludedKeys, topUpService);
@@ -125,17 +125,17 @@ export class TopupServiceController {
 
     @Post('/createTopUPServiceByList')
     @HttpCode(HttpStatus.CREATED)
-    async createTopUPServiceByList(@Req() req: Request, @Res() res: Response, @Body() topUpServiceList: topUpServiceListDTO ): Promise<void> {
+    async createTopUPServiceByList(@Req() req: Request, @Res() res: Response, @Body() topUpServiceList: topUpServiceListDTO): Promise<void> {
         try {
             // init value in columns 
             const insertRes = await this.topUpServiceService.insertTopUpServiceList(topUpServiceList);
             if (insertRes == null) {
                 res.status(422).json({ Error: "Unprocessable Entity ( invalid data )" });
             }
-            else if( insertRes == 'insert success but duplicate' || insertRes == 'insert success' ){
+            else if (insertRes == 'insert success but duplicate' || insertRes == 'insert success') {
                 res.status(200).json(insertRes);
             }
-            
+
 
         } catch (err) {
             console.log(err);
