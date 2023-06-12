@@ -16,14 +16,21 @@ export class ServiceService {
     ) { }
 
     async getLastestTime(): Promise<Date> {
-        const latestTime = new Date() ;
+        const latestTime = new Date();
         return latestTime;
     }
 
     async insertService(service: serviceEntity): Promise<serviceEntity> {
-        service.created_at = new Date();
-        service.latest_fee_at = await this.getLastestTime() ;
-        return await this.serviceRepository.save(service);
+        const duplicate = await this.serviceRepository.findOneBy({ service_name: service.service_name });
+        if (!duplicate) {
+            service.created_at = new Date();
+            service.latest_fee_at = await this.getLastestTime();
+
+            return await this.serviceRepository.save(service);
+        } else {
+            return null;
+        }
+
     }
 
     async findAll(): Promise<serviceEntity[]> {
@@ -33,20 +40,32 @@ export class ServiceService {
     async updateById(service: serviceEntity): Promise<serviceEntity> {
         try {
 
-            const found = await this.serviceRepository.findOneBy({ 'service_id': service.service_id })
+            // const duplicate = await this.serviceRepository.findOneBy({ service_name: service.service_name });
 
-            if (found != null) {
+            // comment for duplicate name s
 
-                const initRes = await initerUpdate(excludedKey, service, found);
+            // if (!duplicate) {
 
-                return await this.serviceRepository.save(initRes);
+                const found = await this.serviceRepository.findOneBy({ 'service_id': service.service_id })
 
-            } else {
+                if (found != null) {
 
-                console.log('error service not fonud')
-                return found;
+                    const initRes = await initerUpdate(excludedKey, service, found);
 
-            }
+                    return await this.serviceRepository.save(initRes);
+
+                } else {
+
+                    return found;
+
+                }
+            // } else {
+
+            //     return null;
+
+            // }
+
+
         } catch (e) {
 
             console.log('error : ', e)
@@ -58,15 +77,15 @@ export class ServiceService {
 
     async deleteById(service_id: number): Promise<string> {
         try {
-            const delRes = await this.serviceRepository.createQueryBuilder() 
-            .delete() 
-            .where('service_id = :value1' , {
-                value1 : service_id,
-            })
-            .execute() ; 
+            const delRes = await this.serviceRepository.createQueryBuilder()
+                .delete()
+                .where('service_id = :value1', {
+                    value1: service_id,
+                })
+                .execute();
 
-            console.log('delRes ' , delRes)
-            if(delRes.affected ==0 ) {
+            console.log('delRes ', delRes)
+            if (delRes.affected == 0) {
                 return "service delete failed not found "
             }
 
@@ -82,13 +101,13 @@ export class ServiceService {
         }
     }
 
-    async searchBy(entity : serviceEntity): Promise<serviceEntity[]> {
-        const found = await this.serviceRepository.findBy(entity) ; 
-            if (found) {
-                return found
-            } else {
-                return null ; 
-            }
+    async searchBy(entity: serviceEntity): Promise<serviceEntity[]> {
+        const found = await this.serviceRepository.findBy(entity);
+        if (found) {
+            return found
+        } else {
+            return null;
+        }
     }
 
 

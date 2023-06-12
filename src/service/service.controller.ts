@@ -22,9 +22,9 @@ export class ServiceController {
 
         try {
 
-            if (service.service_status in serviceStatusAllowed 
-                && service.require_calfee in requireCalfeeAllowed 
-                && service.service_type in serviceTypeAllowed ) {
+            if ( serviceStatusAllowed.includes(Number(service.service_status))
+                && requireCalfeeAllowed.includes(Number(service.require_calfee)) 
+                && serviceTypeAllowed.includes(Number(service.service_type)) )  {
 
                 const resInit = await initer(excludedKey, service)
 
@@ -33,10 +33,15 @@ export class ServiceController {
 
                 const insertRes = await this.serviceService.insertService(resInit);
 
-                res.status(200).json({ insertRes })
+                if(insertRes){
+                    res.status(200).json({ insertRes })
+                }else {
+                    res.status(422).json({Error: "Unprocessable Entity ( duplicate service_name )"})
+                }
 
             } else {
-                res.status(422).json({ error: 'Unprocessable Entity ( invalid input )' })
+           
+                res.status(422).json({ Error: 'Unprocessable Entity ( invalid input )' })
 
             }
 
@@ -75,12 +80,12 @@ export class ServiceController {
                 && (service.require_calfee in requireCalfeeAllowed || service.require_calfee == null)
                 && (service.service_type in serviceTypeAllowed || service.service_type == null)) {
 
-
+                
                 const intiRes = await initer(excludedKey, service);
                 intiRes.service_id = service.service_id;
                 const updateRes = await this.serviceService.updateById(intiRes);
                 if (!updateRes) {
-                    res.status(404).json(`Error: service not found`);
+                    res.status(422).json({Error : 'Unprocessable Entity'});
 
                 } else {
                     res.status(200).json(updateRes);

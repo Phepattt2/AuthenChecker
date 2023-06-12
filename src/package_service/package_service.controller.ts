@@ -26,8 +26,9 @@ export class PackageServiceController {
 
     async createPackageService(@Req() req: Request, @Res() res: Response, @Body() packageServiceDTO: packageServiceDTO): Promise<void> {
         try {
-            console.log(packageServiceAllow.includes(Number(packageServiceDTO.package_type)))
-            if (packageServiceAllow.includes(Number(packageServiceDTO.package_type))) {
+            if ((packageServiceAllow.includes(Number(packageServiceDTO.package_type)) 
+            || packageServiceDTO.package_type == null )
+            && package_validity_unit_List.includes(packageServiceDTO.package_validity_unit)) {
 
                 const initRes = await initer(excludedKey, packageServiceDTO);
 
@@ -59,7 +60,9 @@ export class PackageServiceController {
     @Put('/updateById')
     async updateServiceById(@Req() req: Request, @Res() res: Response, @Body() packageServiceDTO: packageServiceDTO): Promise<void> {
         try {
-            if (packageServiceDTO.package_type in packageServiceAllow || packageServiceDTO.package_type == null) {
+            if ((packageServiceAllow.includes(Number(packageServiceDTO.package_type)) 
+            || packageServiceDTO.package_type == null )
+            && package_validity_unit_List.includes(packageServiceDTO.package_validity_unit)) {
                 const initRes = await initer(excludedKey, packageServiceDTO);
 
                 initRes.service_id = packageServiceDTO.service_id;

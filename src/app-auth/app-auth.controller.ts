@@ -24,7 +24,7 @@ export class AppAuthController {
     async createAppAuth(@Req() req: Request, @Res() res: Response, @Body() newApp: AppAuthDTO): Promise<void> {
         try {
 
-            if ( newApp.app_status  in statusAllowList ) {
+            if (statusAllowList.includes(Number(newApp.app_status  ))) {
 
                 const app = new app_auth();
                 const initRes = await initer(excludedKey, newApp);
@@ -75,13 +75,12 @@ export class AppAuthController {
     @Put("/updateById")
     async updateAuthById(@Req() req: Request, @Res() res: Response, @Body() appAuthDTO: AppAuthDTO): Promise<void> {
         try {
-            if ( appAuthDTO.app_status  in statusAllowList ) {
+            if (  statusAllowList.includes(Number(appAuthDTO.app_status  )) ) {
 
                 const intiRes = await initer(excludedKey, appAuthDTO);
 
                 intiRes.app_id = appAuthDTO.app_id;
 
-                intiRes.updated_at = new Date();
 
                 const updateResult = await this.appAuthService.updateById(intiRes);
 

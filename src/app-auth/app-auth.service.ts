@@ -14,7 +14,7 @@ export class AppAuthService {
     ) { }
 
     async createAppAuth(appAuth: app_auth): Promise<app_auth> {
-
+        appAuth.created_at = new Date() ;
         return this.appAuthRepository.save(appAuth);
 
     }

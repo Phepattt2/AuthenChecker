@@ -17,11 +17,11 @@ export class ProviderService {
 
     async insertProvider(provider: providerEntity): Promise<providerEntity> {
 
-        const samePeoviderCode = this.providerRepository.findBy({ provider_code: provider.provider_code })
-        const sameNameProvider = this.providerRepository.findBy({ provider_name: provider.provider_name })
+        const samePeoviderCode = await this.providerRepository.findBy({ provider_code: provider.provider_code })
+        const sameNameProvider = await this.providerRepository.findBy({ provider_name: provider.provider_name })
         
-        if( (await samePeoviderCode).length == 0 ){
-            if ((await sameNameProvider).length == 0) {
+        if( ( samePeoviderCode).length == 0 ){
+            if (( sameNameProvider).length == 0) {
                 provider.created_at = new Date() ; 
                 return this.providerRepository.save(provider);
             } else {

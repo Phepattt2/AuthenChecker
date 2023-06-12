@@ -30,7 +30,7 @@ export class TransactionController {
 
     async createTransaction(@Req() req: Request, @Res() res: Response, @Body() newTransaction: transactionDTO): Promise<void> {
         try {
-            if (  newTransaction.txn_status in txn_statusAllow ){
+            if (   txn_statusAllow.includes(Number(newTransaction.txn_status )) ){
                 const setEntity = await initer(excludedKey, newTransaction)
                 // database auto generate ref_id
                 const res_data = await this.transactionService.insertTransaction(setEntity);
@@ -51,7 +51,7 @@ export class TransactionController {
     @Put("/updateById")
     async updateTransactionById(@Req() req: Request, @Res() res: Response, @Body() transaction: transactionDTO): Promise<void> {
         try {
-            if ( txn_statusAllow.includes(transaction.txn_status)){
+            if (  txn_statusAllow.includes(Number(transaction.txn_status )) ){
 
                 const initRes = await initer(excludedKey, transaction)
 
