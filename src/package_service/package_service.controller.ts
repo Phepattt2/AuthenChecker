@@ -56,7 +56,6 @@ export class PackageServiceController {
 
     }
 
-
     @Put('/updateById')
     async updateServiceById(@Req() req: Request, @Res() res: Response, @Body() packageServiceDTO: packageServiceDTO): Promise<void> {
         try {

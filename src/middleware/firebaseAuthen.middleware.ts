@@ -28,6 +28,13 @@ export class AuthMiddleWare implements NestMiddleware {
             if ( tokenData.startsWith('Bearer')) {
                 const token = tokenData.split(' ')[1];
                 admin.auth().verifyIdToken(token).then(async (res) => {
+                    const querySnapshot = await fireStoreDB.collection('Users').where("uid","==",res.uid).limit(1).get() ;
+                    const userData = querySnapshot.docs[0].data() ; 
+                    if(userData.role == "admin"){
+                        console.log(`Welcome admin ${res.name} , role ${res.role}`) ; 
+                    }else {
+                        res.status(401).json({Error : "unauthorized user"})
+                    }
                     next();
                 }).catch((e) => {
                     res.status(401)

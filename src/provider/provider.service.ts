@@ -38,7 +38,7 @@ export class ProviderService {
     async updateById(provider: providerEntity): Promise<providerEntity> {
         try {
             const sameNameProvider = this.providerRepository.findBy({ provider_name: provider.provider_name })
-            console.log('sameNameProvider' , (await sameNameProvider).length)
+
             if ((await sameNameProvider).length == 0) {
                 const found = await this.providerRepository.findOneBy({ 'provider_code': provider.provider_code })
 

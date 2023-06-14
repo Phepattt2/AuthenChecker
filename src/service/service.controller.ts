@@ -6,11 +6,16 @@ import { ServiceService } from './service.service';
 import { serviceDTO } from 'src/dto/service.dto';
 import { Response, Request } from 'express';
 import { fireStoreDB } from 'src/middleware/firebaseAuthen.middleware';
+import { CollectionReference, collection, doc, setDoc, where, query } from 'firebase/firestore';
+import { firestore } from 'firebase-admin';
+import { userDTO } from 'src/dto/user.dto';
+import { RouterModule } from '@nestjs/core';
+
 
 const excludedKey = ['service_id', 'created_at', 'latest_fee_at']
 const serviceStatusAllowed = [0, 1];
 const requireCalfeeAllowed = [0, 1];
-const serviceTypeAllowed = [1,2,3,4,5,6]
+const serviceTypeAllowed = [1, 2, 3, 4, 5, 6]
 
 @Controller('service')
 export class ServiceController {
@@ -23,9 +28,9 @@ export class ServiceController {
 
         try {
 
-            if ( serviceStatusAllowed.includes(Number(service.service_status))
-                && requireCalfeeAllowed.includes(Number(service.require_calfee)) 
-                && serviceTypeAllowed.includes(Number(service.service_type)) )  {
+            if (serviceStatusAllowed.includes(Number(service.service_status))
+                && requireCalfeeAllowed.includes(Number(service.require_calfee))
+                && serviceTypeAllowed.includes(Number(service.service_type))) {
 
                 const resInit = await initer(excludedKey, service)
 
@@ -34,14 +39,14 @@ export class ServiceController {
 
                 const insertRes = await this.serviceService.insertService(resInit);
 
-                if(insertRes){
+                if (insertRes) {
                     res.status(200).json({ insertRes })
-                }else {
-                    res.status(422).json({Error: "Unprocessable Entity ( duplicate service_name )"})
+                } else {
+                    res.status(422).json({ Error: "Unprocessable Entity ( duplicate service_name )" })
                 }
 
             } else {
-           
+
                 res.status(422).json({ Error: 'Unprocessable Entity ( invalid input )' })
 
             }
@@ -74,20 +79,19 @@ export class ServiceController {
         }
     }
 
+    //  -------------------------------------------------------------------------------------------------------- // 
+
     @Get('/getUsers')
-    async getDataBaseUsers (@Req() req: Request, @Res() res: Response): Promise<void> {
+    async getDataBaseUsers(@Req() req: Request, @Res() res: Response): Promise<void> {
         try {
-            const db = fireStoreDB
-            const userSnap = await db.collection('Users').get() ; 
+            const db = fireStoreDB;
+            const userSnap = await db.collection('Users').get();
             const userData = await userSnap.docs.map(doc => {
-                res.status(200).json( {
-                    uid : doc.id , 
-                    ...doc.data() 
+                res.status(200).json({
+                    uid: doc.id,
+                    ...doc.data()
                 })
             })
-           
-            
-
 
         } catch (err) {
 
@@ -98,70 +102,123 @@ export class ServiceController {
         }
     }
 
+    @Post('/googleLoginUser')
+    async createUser(@Req() req: Request, @Res() res: Response, @Body() user: userDTO): Promise<void> {
+        try {
+            const collectoinRef = fireStoreDB.collection("Users");
+            const querySnapshot = await collectoinRef.where("uid", "==", user.uid).limit(1).get();
+            if (!querySnapshot.empty) {
+                // if user exists check for role 
+
+                res.status(200).send(`successfully login , role ${user.role}`);
+            } else {
+                // if empty create new document to firestore (extracting data from token )
+                // add service function                             be entity 
+                const documentReference = await collectoinRef.add(user);
+                res.status(200).send("pending for authorization");
+            }
+
+        } catch (e) {
+            console.log(e);
+            res.status(400).json({ Error: "insert user failed" });
+
+        }
+    }
+
+    @Put('/updateUserRole')
+    async updateUsersRole(@Req() req: Request, @Res() res: Response, @Body() user: userDTO): Promise<void> {
+        try {
+            const collectoinRef = fireStoreDB.collection("Users");
+            const querySnapshot = await collectoinRef.where("uid", "==", user.uid).limit(1).get();
+            if (!querySnapshot.empty) {
+
+                const updateData = await querySnapshot.docs.map(doc => doc.ref.update({ "role": user.role }));
+
+                const patched = await collectoinRef.where("uid", "==", user.uid).limit(1).get();
+
+                const resp = patched.docs[0].data()
+                console.log(resp)
+
+                res.status(200).json({ resp });
+            } else {
+                res.status(404).json({ Error: "user not found" })
+            }
+
+        } catch (e) {
+            console.log(e);
+            res.status(500).json({ Error: "internal server error" });
+
+        }
+    }
+
+
+
+    //  -------------------------------------------------------------------------------------------------------- // 
+
     @Put('/updateById')
     async updateServiceById(@Req() req: Request, @Res() res: Response, @Body() service: serviceDTO): Promise<void> {
         try {
-            if ((service.service_status in serviceStatusAllowed || service.service_status == null )
+            if ((service.service_status in serviceStatusAllowed || service.service_status == null)
                 && (service.require_calfee in requireCalfeeAllowed || service.require_calfee == null)
                 && (service.service_type in serviceTypeAllowed || service.service_type == null)) {
 
-                
+
                 const intiRes = await initer(excludedKey, service);
                 intiRes.service_id = service.service_id;
                 const updateRes = await this.serviceService.updateById(intiRes);
                 if (!updateRes) {
-                    res.status(422).json({Error : 'Unprocessable Entity'});
+                    res.status(422).json({ Error: 'Unprocessable Entity' });
 
                 } else {
                     res.status(200).json(updateRes);
 
                 }
-            }else {
+            } else {
                 console.log(service)
-                res.status(422).json({Error : "Unprocessable Entity ( invalid input )"});
+                res.status(422).json({ Error: "Unprocessable Entity ( invalid input )" });
             }
 
-            } catch (e) {
+        } catch (e) {
 
-                console.log(e);
+            console.log(e);
 
-                res.status(500).json({ error: 'Internal Server Error' });
+            res.status(500).json({ error: 'Internal Server Error' });
 
-            }
         }
+    }
 
     @Delete('/deleteById')
-        async deleteServiceById(@Req() req: Request, @Res() res: Response, @Body() service: serviceDTO): Promise < void> {
-            try {
-                const delRes = await this.serviceService.deleteById(service.service_id)
+    async deleteServiceById(@Req() req: Request, @Res() res: Response, @Body() service: serviceDTO): Promise<void> {
+        try {
+            const delRes = await this.serviceService.deleteById(service.service_id)
             console.log(delRes)
             res.status(200).json(delRes);
 
-            } catch(e) {
+        } catch (e) {
 
-                console.log(e);
+            console.log(e);
 
-                res.status(500).json({ error: 'Internal Server Error' });
+            res.status(500).json({ error: 'Internal Server Error' });
 
-            }
-        }
-
-        @Get('/getSearch')
-        async getFindByEntity(@Req() req: Request, @Res() res: Response, @Body() serviceDTO: serviceDTO): Promise < void> {
-            try{
-                const initRes = await initer(excludedKey, serviceDTO) ;
-                initRes.service_id = serviceDTO.service_id ;
-
-                const findResult = await this.serviceService.searchBy(initRes) ;
-                
-                res.status(200).json(findResult) ;
-
-            }catch(e) {
-                console.log(e);
-                res.status(500).json({ Error: 'internal server error' });
-            }
         }
     }
+
+    @Get('/getSearch')
+    async getFindByEntity(@Req() req: Request, @Res() res: Response, @Body() serviceDTO: serviceDTO): Promise<void> {
+        try {
+            const initRes = await initer(excludedKey, serviceDTO);
+            initRes.service_id = serviceDTO.service_id;
+
+            const findResult = await this.serviceService.searchBy(initRes);
+
+            res.status(200).json(findResult);
+
+        } catch (e) {
+            console.log(e);
+            res.status(500).json({ Error: 'internal server error' });
+        }
+    }
+}
 
 
 async function initer(notIncludeList: string[], userInputDTO: serviceDTO): Promise<serviceEntity> {

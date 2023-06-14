@@ -26,7 +26,6 @@ export class TransactionRunnerController {
             const intiRes = await initer(excludedKey, newTransactionRunner);
 
             // generate ref_id key
-            intiRes.runner_key = gen_ref_id(0);
 
             const creatRes = await this.transactionRunnerService.insertTransactionRunner(intiRes);
 

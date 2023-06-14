@@ -33,7 +33,6 @@ export class AppServiceMapController {
 
             initRes.app_id = appServiceDTO.app_id;
             initRes.service_id = appServiceDTO.service_id;
-            initRes.created_at = appServiceDTO.created_at;
 
             const createRes = await this.appServiceMapService.insertAppServiceMap(initRes);
             res.status(200).json(createRes)

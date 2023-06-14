@@ -16,7 +16,7 @@ export class firebaseAppCheckMiddleware implements NestMiddleware {
     // no test ! 
 
     async use(req: Request, res: Response, next: NextFunction) {
-        console.log(`headers firebase chacker ${req.header('X-Firebase-AppCheck')}`) ;
+        // console.log(`headers firebase chacker ${req.header('X-Firebase-AppCheck')}`) ;
 
         try {
             const appCheckToken = req.header('X-Firebase-AppCheck');

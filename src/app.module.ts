@@ -72,10 +72,9 @@ export class AppModule implements NestModule
   configure(consumer: MiddlewareConsumer) {
      consumer
      .apply(AuthMiddleWare).forRoutes('*');
-    //  consumer
-    //  .apply(firebaseAppCheckMiddleware).forRoutes('*');
-      // consumer
-      // .apply(FirestoreMiddleware).forRoutes('*') ; 
+     consumer
+     .apply(firebaseAppCheckMiddleware).forRoutes('*');
+
   }
  }
 
