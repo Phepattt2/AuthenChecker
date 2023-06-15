@@ -39,6 +39,9 @@ import { TopupServiceService } from './topup_service/topup_service.service';
 import { TopupServiceModule } from './topup_service/topup_service.module';
 import { AuthMiddleWare } from './middleware/firebaseAuthen.middleware';
 import {  firebaseAppCheckMiddleware } from './middleware/firebaseAppcheck.middleware';
+import { APP_GUARD } from '@nestjs/core';
+import { RolesGuard } from './guard/role.guard';
+import { FirebaseModule } from './firebase/firebase.module';
 
 
 // appServiceMapEntity,
@@ -62,16 +65,24 @@ import {  firebaseAppCheckMiddleware } from './middleware/firebaseAppcheck.middl
                                 topUpServiceEntity,
                                 transactionRunnerEntity,
                                 transactionEntity,]),
+    FirebaseModule,
             ],
           
   controllers: [AppController, AppAuthController, ProviderController, ServiceController, TransactionController, AppServiceMapController, TransactionRunnerController, PackageServiceController, TopupServiceController ], 
-  providers: [AppService, AppAuthService, ProviderService, ServiceService, TransactionService , AppServiceMapService, TransactionRunnerService, PackageServiceService, TopupServiceService],
+  providers: [AppService, AppAuthService, ProviderService, 
+    ServiceService, TransactionService , AppServiceMapService, 
+    TransactionRunnerService, PackageServiceService, TopupServiceService , 
+    {
+      provide : APP_GUARD , 
+      useClass : RolesGuard ,
+    }
+  ],
 })
 export class AppModule implements NestModule
 {
   configure(consumer: MiddlewareConsumer) {
-     consumer
-     .apply(AuthMiddleWare).forRoutes('*');
+    //  consumer
+    //  .apply(AuthMiddleWare).forRoutes('*');
      consumer
      .apply(firebaseAppCheckMiddleware).forRoutes('*');
 

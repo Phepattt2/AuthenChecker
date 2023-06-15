@@ -3,6 +3,8 @@ import { ProviderService } from './provider.service';
 import { providerEntity } from 'src/entity/provider.Entity';
 import { providerDTO } from 'src/dto/provider.dto';
 import { Request, Response } from 'express'
+import { Roles } from 'src/entity/role.decorator';
+import { Role } from 'src/entity/role.enum';
 const excludedKey = ['provider_code', 'created_at']
 
 @Controller('provider')
@@ -14,6 +16,8 @@ export class ProviderController {
         return this.providerService.findAll();
     }
 
+
+    @Roles(Role.ADMIN)
     @Post('/createProvider')
     @HttpCode(HttpStatus.CREATED)
 
@@ -29,7 +33,6 @@ export class ProviderController {
             }else{
                 res.status(422).json({Erorr:"Unprocessable Entity ( duplicate Provider's Data )"})
             }
-
 
         }catch(e) {
         console.log(e)

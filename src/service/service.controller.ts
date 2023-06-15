@@ -5,7 +5,7 @@ import { IntegerType, Repository } from 'typeorm';
 import { ServiceService } from './service.service';
 import { serviceDTO } from 'src/dto/service.dto';
 import { Response, Request } from 'express';
-import { fireStoreDB } from 'src/middleware/firebaseAuthen.middleware';
+// import { fireStoreDB } from 'src/middleware/firebaseAuthen.middleware';
 import { CollectionReference, collection, doc, setDoc, where, query } from 'firebase/firestore';
 import { firestore } from 'firebase-admin';
 import { userDTO } from 'src/dto/user.dto';
@@ -81,75 +81,75 @@ export class ServiceController {
 
     //  -------------------------------------------------------------------------------------------------------- // 
 
-    @Get('/getUsers')
-    async getDataBaseUsers(@Req() req: Request, @Res() res: Response): Promise<void> {
-        try {
-            const db = fireStoreDB;
-            const userSnap = await db.collection('Users').get();
-            const userData = await userSnap.docs.map(doc => {
-                res.status(200).json({
-                    uid: doc.id,
-                    ...doc.data()
-                })
-            })
+    // @Get('/getUsers')
+    // async getDataBaseUsers(@Req() req: Request, @Res() res: Response): Promise<void> {
+    //     try {
+    //         const db = fireStoreDB;
+    //         const userSnap = await db.collection('Users').get();
+    //         const userData = await userSnap.docs.map(doc => {
+    //             res.status(200).json({
+    //                 uid: doc.id,
+    //                 ...doc.data()
+    //             })
+    //         })
 
-        } catch (err) {
+    //     } catch (err) {
 
-            console.log(err);
+    //         console.log(err);
 
-            res.status(500).json({ error: 'Internal Server Error' })
+    //         res.status(500).json({ error: 'Internal Server Error' })
 
-        }
-    }
+    //     }
+    // }
 
-    @Post('/googleLoginUser')
-    async createUser(@Req() req: Request, @Res() res: Response, @Body() user: userDTO): Promise<void> {
-        try {
-            const collectoinRef = fireStoreDB.collection("Users");
-            const querySnapshot = await collectoinRef.where("uid", "==", user.uid).limit(1).get();
-            if (!querySnapshot.empty) {
-                // if user exists check for role 
+    // @Post('/googleLoginUser')
+    // async createUser(@Req() req: Request, @Res() res: Response, @Body() user: userDTO): Promise<void> {
+    //     try {
+    //         const collectoinRef = fireStoreDB.collection("Users");
+    //         const querySnapshot = await collectoinRef.where("uid", "==", user.uid).limit(1).get();
+    //         if (!querySnapshot.empty) {
+    //             // if user exists check for role 
 
-                res.status(200).send(`successfully login , role ${user.role}`);
-            } else {
-                // if empty create new document to firestore (extracting data from token )
-                // add service function                             be entity 
-                const documentReference = await collectoinRef.add(user);
-                res.status(200).send("pending for authorization");
-            }
+    //             res.status(200).send(`successfully login , role ${user.role}`);
+    //         } else {
+    //             // if empty create new document to firestore (extracting data from token )
+    //             // add service function                             be entity 
+    //             const documentReference = await collectoinRef.add(user);
+    //             res.status(200).send("pending for authorization");
+    //         }
 
-        } catch (e) {
-            console.log(e);
-            res.status(400).json({ Error: "insert user failed" });
+    //     } catch (e) {
+    //         console.log(e);
+    //         res.status(400).json({ Error: "insert user failed" });
 
-        }
-    }
+    //     }
+    // }
 
-    @Put('/updateUserRole')
-    async updateUsersRole(@Req() req: Request, @Res() res: Response, @Body() user: userDTO): Promise<void> {
-        try {
-            const collectoinRef = fireStoreDB.collection("Users");
-            const querySnapshot = await collectoinRef.where("uid", "==", user.uid).limit(1).get();
-            if (!querySnapshot.empty) {
+    // @Put('/updateUserRole')
+    // async updateUsersRole(@Req() req: Request, @Res() res: Response, @Body() user: userDTO): Promise<void> {
+    //     try {
+    //         const collectoinRef = fireStoreDB.collection("Users");
+    //         const querySnapshot = await collectoinRef.where("uid", "==", user.uid).limit(1).get();
+    //         if (!querySnapshot.empty) {
 
-                const updateData = await querySnapshot.docs.map(doc => doc.ref.update({ "role": user.role }));
+    //             const updateData = await querySnapshot.docs.map(doc => doc.ref.update({ "role": user.role }));
 
-                const patched = await collectoinRef.where("uid", "==", user.uid).limit(1).get();
+    //             const patched = await collectoinRef.where("uid", "==", user.uid).limit(1).get();
 
-                const resp = patched.docs[0].data()
-                console.log(resp)
+    //             const resp = patched.docs[0].data()
+    //             console.log(resp)
 
-                res.status(200).json({ resp });
-            } else {
-                res.status(404).json({ Error: "user not found" })
-            }
+    //             res.status(200).json({ resp });
+    //         } else {
+    //             res.status(404).json({ Error: "user not found" })
+    //         }
 
-        } catch (e) {
-            console.log(e);
-            res.status(500).json({ Error: "internal server error" });
+    //     } catch (e) {
+    //         console.log(e);
+    //         res.status(500).json({ Error: "internal server error" });
 
-        }
-    }
+    //     }
+    // }
 
 
 

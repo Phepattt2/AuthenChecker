@@ -3,6 +3,8 @@ import { TransactionService } from './transaction.service';
 import { transactionEntity } from 'src/entity/transaction.Entity';
 import { transactionDTO } from 'src/dto/transaction.dto';
 import { Request, Response } from 'express';
+import { Role } from 'src/entity/role.enum';
+import { Roles } from 'src/entity/role.decorator';
 
 const excludedKey = ['created_at', 'ref_id', 'paid_at'];
 const txn_statusAllow = [0,1,2,3]  ;
@@ -13,6 +15,7 @@ const txn_statusAllow = [0,1,2,3]  ;
 export class TransactionController {
     constructor(private readonly transactionService: TransactionService) { }
 
+    @Roles(Role.ADMIN , Role.DEV)
     @Get('/getAllTransactions')
     async getAllTransaction(@Req() req: Request, @Res() res: Response): Promise<void> {
         try {
