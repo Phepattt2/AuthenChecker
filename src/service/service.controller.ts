@@ -1,7 +1,7 @@
-import { Controller, HttpCode, HttpStatus, Post, Body, Get, Req, Res, Put, Delete } from '@nestjs/common';
+import { Controller, HttpCode, HttpStatus, Post, Body, Get, Req, Res, Put, Delete ,Inject} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { serviceEntity } from 'src/entity/service.Entity';
-import { IntegerType, Repository } from 'typeorm';
+import { Admin, IntegerType, Repository } from 'typeorm';
 import { ServiceService } from './service.service';
 import { serviceDTO } from 'src/dto/service.dto';
 import { Response, Request } from 'express';
@@ -10,7 +10,7 @@ import { CollectionReference, collection, doc, setDoc, where, query } from 'fire
 import { firestore } from 'firebase-admin';
 import { userDTO } from 'src/dto/user.dto';
 import { RouterModule } from '@nestjs/core';
-
+import * as admin from 'firebase-admin'
 
 const excludedKey = ['service_id', 'created_at', 'latest_fee_at']
 const serviceStatusAllowed = [0, 1];
@@ -19,7 +19,7 @@ const serviceTypeAllowed = [1, 2, 3, 4, 5, 6]
 
 @Controller('service')
 export class ServiceController {
-    constructor(private readonly serviceService: ServiceService) { }
+    constructor(private readonly serviceService: ServiceService , @Inject('FirebaseAdmin') private readonly firebaseAdmin: admin.app.App ) { }
 
     @Post('/createService')
     @HttpCode(HttpStatus.CREATED)
@@ -81,26 +81,29 @@ export class ServiceController {
 
     //  -------------------------------------------------------------------------------------------------------- // 
 
-    // @Get('/getUsers')
-    // async getDataBaseUsers(@Req() req: Request, @Res() res: Response): Promise<void> {
-    //     try {
-    //         const db = fireStoreDB;
-    //         const userSnap = await db.collection('Users').get();
-    //         const userData = await userSnap.docs.map(doc => {
-    //             res.status(200).json({
-    //                 uid: doc.id,
-    //                 ...doc.data()
-    //             })
-    //         })
+    @Post('/getUsers')
+    async getDataBaseUsers(@Req() req: Request, @Res() res: Response , @Body() userDto : userDTO ): Promise<void> {
+        try {
+            console.log(req.header)            
+            console.log(req.body)            
+            await admin.auth().getUserByEmail(userDto.email).then((user)=>{
+                return admin.auth().setCustomUserClaims(user.uid , { role : ["developer" , "admin" , "intern"]})
+            }).then(()=>{
+                console.log("success")
+                res.status(200).json({'message':'success'});
+            }).catch(()=>{
+                console.log("error")
+                res.status(422).json({'message':'error'});
+            })
 
-    //     } catch (err) {
+        } catch (err) {
 
-    //         console.log(err);
+            console.log(err);
 
-    //         res.status(500).json({ error: 'Internal Server Error' })
+            res.status(500).json({ error: 'Internal Server Error' })
 
-    //     }
-    // }
+        }
+    }
 
     // @Post('/googleLoginUser')
     // async createUser(@Req() req: Request, @Res() res: Response, @Body() user: userDTO): Promise<void> {

@@ -21,14 +21,14 @@ export class firebaseAppCheckMiddleware implements NestMiddleware {
         try {
             const appCheckToken = req.header('X-Firebase-AppCheck');
             if (!appCheckToken) {
-                res.status(401).json({ Erro: 'Unauthorized' });
+                res.status(401).json({ Error: 'Unauthorized' });
             }
             else {
                 const tokenCheckResult = await checkReCaptchaToken(appCheckToken);
                 if (tokenCheckResult == "succeeded") {
                     next();
                 } else {
-                    res.status(401).json({ Erro: 'Unauthorized' });
+                    res.status(401).json({ Error: 'Unauthorized' });
                 }
             }
         }

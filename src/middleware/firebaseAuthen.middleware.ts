@@ -1,4 +1,4 @@
-import { Injectable, NestMiddleware } from '@nestjs/common';
+import { Inject, Injectable, NestMiddleware } from '@nestjs/common';
 import { Response, Request, NextFunction } from 'express';
 import * as admin from 'firebase-admin';
 import * as fs from 'fs';
@@ -21,38 +21,41 @@ const serviceAccountData = data.serviceAccount;
 
 export class AuthMiddleWare implements NestMiddleware {
     //  tested 
+    constructor( @Inject('FirebaseAdmin') private readonly firebaseAdmin: admin.app.App) {}
+
     async use(req: Request, res: Response, next: NextFunction) {
-        // try {
-        //     const tokenData = req.headers.authorization;
+        try {
+            const tokenData = req.headers.authorization;
 
-        //     if (tokenData.startsWith('Bearer')) {
-        //         const token = tokenData.split(' ')[1];
-        //         admin.auth().verifyIdToken(token).then(async (res) => {
-        //             // const querySnapshot = await fireStoreDB.collection('Users').where("uid", "==", res.uid).limit(1).get();
-        //             // if (!querySnapshot.empty) {
-        //             //     const userData = querySnapshot.docs[0].data();
-        //             //     if (userData.role == "admin") {
-        //             //         console.log(`Welcome admin ${res.name} , role ${res.role}`);
-        //             //     } else {
-        //             //         res.status(401).json({ Error: "unauthorized user" })
-        //             //     }
-        //                 next();
-        //             // }
-        //             // else {
-        //             //     res.status(401).json({ Error: "unauthorized"}) ; 
-        //             // }
-
-        //         }).catch((e) => {
-        //             res.status(401)
-        //             res.send({ Error: 'status Authorized 401 error invalid token' });
-        //         })
-        //     }
-        // }
-        // catch (e) {
-        //     console.log(e);
-        //     res.status(401)
-        //     res.send({ Error: `status Authorized 401 error` });
-        // }
+            if (tokenData.startsWith('Bearer')) {
+                const token = tokenData.split(' ')[1];
+                admin.auth().verifyIdToken(token).then(async (res) => {
+                    // const querySnapshot = await this.firebaseAdmin.firestore().collection('Users').where("uid", "==", res.uid).limit(1).get();
+                    // if (!querySnapshot.empty) {
+                    //     const userData = querySnapshot.docs[0].data();
+                    //     if (userData.role == "admin") {
+                    //         console.log(`Welcome admin ${res.name} , role ${res.role}`);
+                    //     } else {
+                    //         res.status(401).json({ Error: "unauthorized user" })
+                    //     }
+                    //     next();
+                    // }
+                    // else {
+                    //     res.status(401).json({ Error: "unauthorized"}) ; 
+                    // }
+                    console.log("token :" , res );
+                    next();
+                }).catch((e) => {
+                    res.status(401)
+                    res.send({ Error: 'status Authorized 401 error invalid token' });
+                })
+            }
+        }
+        catch (e) {
+            console.log(e);
+            res.status(401)
+            res.send({ Error: `status Authorized 401 error` });
+        }
     }
 
 }
