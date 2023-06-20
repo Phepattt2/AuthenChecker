@@ -72,10 +72,10 @@ import { FirebaseModule } from './firebase/firebase.module';
   providers: [AppService, AppAuthService, ProviderService, 
     ServiceService, TransactionService , AppServiceMapService, 
     TransactionRunnerService, PackageServiceService, TopupServiceService , 
-    // {
-    //   provide : APP_GUARD , 
-    //   useClass : RolesGuard ,
-    // }
+    {
+      provide : APP_GUARD , 
+      useClass : RolesGuard ,
+    }
   ],
 })
 export class AppModule implements NestModule

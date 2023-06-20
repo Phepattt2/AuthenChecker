@@ -15,7 +15,7 @@ const txn_statusAllow = [0,1,2,3]  ;
 export class TransactionController {
     constructor(private readonly transactionService: TransactionService) { }
 
-    @Roles(Role.ADMIN , Role.DEV)
+    @Roles(Role.EXEC , Role.ADMIN )
     @Get('/getAllTransactions')
     async getAllTransaction(@Req() req: Request, @Res() res: Response): Promise<void> {
         try {
