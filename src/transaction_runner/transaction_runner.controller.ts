@@ -5,8 +5,8 @@ import { transactionRunnerDTO } from 'src/dto/transaction_runner.dto';
 import { PrimaryGeneratedColumn } from 'typeorm';
 import { gen_ref_id } from 'src/generator/gen_ref_id';
 import { Request, Response } from 'express';
-import { Role } from 'src/entity/role.enum';
-import { Roles } from 'src/entity/role.decorator';
+import { Role } from 'src/role/role.enum';
+import { Roles } from 'src/role/role.decorator';
 
 const excludedKey = ["runner_key"]
 

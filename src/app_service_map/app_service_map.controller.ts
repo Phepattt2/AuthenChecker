@@ -3,8 +3,8 @@ import { appServiceMapEntity } from 'src/entity/app_service_map.Entity';
 import { Response, Request } from 'express';
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Put, Delete, Req, Res } from '@nestjs/common';
 import { appServiceMapDTO } from 'src/dto/app_service_map.dto';
-import { Role } from 'src/entity/role.enum';
-import { Roles } from 'src/entity/role.decorator';
+import { Role } from 'src/role/role.enum';
+import { Roles } from 'src/role/role.decorator';
 // fis this page then go recheck others 
 
 const excludedKey = ['app_id', 'servicer_id', 'created_at'];

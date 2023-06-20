@@ -3,8 +3,8 @@ import { TransactionService } from './transaction.service';
 import { transactionEntity } from 'src/entity/transaction.Entity';
 import { transactionDTO } from 'src/dto/transaction.dto';
 import { Request, Response } from 'express';
-import { Role } from 'src/entity/role.enum';
-import { Roles } from 'src/entity/role.decorator';
+import { Role } from 'src/role/role.enum';
+import { Roles } from 'src/role/role.decorator';
 
 const excludedKey = ['created_at', 'ref_id', 'paid_at'];
 const txn_statusAllow = [0,1,2,3]  ;

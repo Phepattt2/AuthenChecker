@@ -10,8 +10,8 @@ import { CollectionReference, collection, doc, setDoc, where, query } from 'fire
 import { firestore } from 'firebase-admin';
 import { userDTO } from 'src/dto/user.dto';
 import { RouterModule } from '@nestjs/core';
-import { Role } from 'src/entity/role.enum';
-import { Roles } from 'src/entity/role.decorator';
+import { Role } from 'src/role/role.enum';
+import { Roles } from 'src/role/role.decorator';
 import * as admin from 'firebase-admin'
 
 const excludedKey = ['service_id', 'created_at', 'latest_fee_at']

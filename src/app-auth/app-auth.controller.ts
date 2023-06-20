@@ -6,8 +6,8 @@ import { randomUUID, randomBytes } from 'crypto';
 import { bytesToBase64 } from 'byte-base64';
 import { Response, Request } from 'express';
 
-import { Roles } from 'src/entity/role.decorator';
-import { Role } from 'src/entity/role.enum';
+import { Roles } from 'src/role/role.decorator';
+import { Role } from 'src/role/role.enum';
 // const value of this table  
 
 const excludedKey = ['app_id', 'app_secret', 'created_at', 'updated_at'];
@@ -19,7 +19,7 @@ const statusAllowList = [0, 1];
 export class AppAuthController {
     constructor(private readonly appAuthService: AppAuthService) { }
 
-    @Roles(Role.ADMIN , Role.DEV  , Role.EXEC , Role.USER)
+    @Roles(Role.ADMIN, Role.DEV, Role.EXEC, Role.USER)
     @Get('/getSearch')
     async getFindByEntity(@Req() req: Request, @Res() res: Response, @Body() appAuthDTO: AppAuthDTO): Promise<void> {
         try {
@@ -42,7 +42,7 @@ export class AppAuthController {
 
     }
 
-    @Roles(Role.ADMIN , Role.DEV , Role.EXEC )
+    @Roles(Role.ADMIN, Role.DEV, Role.EXEC)
     @Get("/getAllAppAuth")
     async getAllAppAuth(@Req() req: Request, @Res() res: Response): Promise<void> {
 
@@ -59,14 +59,14 @@ export class AppAuthController {
 
         }
     }
-    
-    @Roles(Role.ADMIN , Role.DEV , Role.USER)
+
+    @Roles(Role.ADMIN, Role.DEV, Role.USER)
     @Post("/createAppAuth")
     @HttpCode(HttpStatus.CREATED)
     async createAppAuth(@Req() req: Request, @Res() res: Response, @Body() newApp: AppAuthDTO): Promise<void> {
         try {
 
-            if (statusAllowList.includes(Number(newApp.app_status  ))) {
+            if (statusAllowList.includes(Number(newApp.app_status))) {
 
                 const app = new app_auth();
                 const initRes = await initer(excludedKey, newApp);
@@ -85,7 +85,7 @@ export class AppAuthController {
 
                 console.log('invalid input app_status');
 
-                res.status(422).json({Error:'Unprocessable Entity ( invalid input )'});
+                res.status(422).json({ Error: 'Unprocessable Entity ( invalid input )' });
 
             }
 
@@ -97,12 +97,12 @@ export class AppAuthController {
 
     }
 
-    
-    @Roles(Role.ADMIN , Role.DEV )
+
+    @Roles(Role.ADMIN, Role.DEV)
     @Put("/updateById")
     async updateAuthById(@Req() req: Request, @Res() res: Response, @Body() appAuthDTO: AppAuthDTO): Promise<void> {
         try {
-            if (  statusAllowList.includes(Number(appAuthDTO.app_status  )) ) {
+            if (statusAllowList.includes(Number(appAuthDTO.app_status))) {
 
                 const intiRes = await initer(excludedKey, appAuthDTO);
 
@@ -122,7 +122,7 @@ export class AppAuthController {
                 }
             } else {
 
-                res.status(422).json({Error:'Unprocessable Entity ( invalid input )'});
+                res.status(422).json({ Error: 'Unprocessable Entity ( invalid input )' });
 
             }
 
@@ -136,7 +136,7 @@ export class AppAuthController {
         }
     }
 
-    @Roles(Role.ADMIN )
+    @Roles(Role.ADMIN)
     @Delete("/deleteById")
     async deleteAuthById(@Req() req: Request, @Res() res: Response, @Body() newApp: AppAuthDTO): Promise<void> {
 
@@ -160,7 +160,7 @@ export class AppAuthController {
 
 
     }
- 
+
 
 }
 

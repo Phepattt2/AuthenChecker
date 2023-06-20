@@ -1,6 +1,6 @@
 import { Injectable, CanActivate, ExecutionContext, Req, Res, Body, Inject } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Role } from 'src/entity/role.enum';
+import { Role } from 'src/role/role.enum';
 import { Request, Response } from 'express';
 import * as admin from 'firebase-admin';
 import { type } from 'os';

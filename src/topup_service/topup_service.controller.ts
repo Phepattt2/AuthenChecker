@@ -4,8 +4,8 @@ import { Request, Response } from 'express';
 import { TopupServiceService } from './topup_service.service';
 import { topUpServiceDTO } from 'src/dto/topUpService.dto';
 import { topUpServiceListDTO } from 'src/dto/topUpServiceList.dto';
-import { Role } from 'src/entity/role.enum';
-import { Roles } from 'src/entity/role.decorator';
+import { Role } from 'src/role/role.enum';
+import { Roles } from 'src/role/role.decorator';
 
 const excludedKeys = ['service_id', 'topup_order', 'updated_at'];
 

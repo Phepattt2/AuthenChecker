@@ -12,7 +12,8 @@ export class ProviderService {
     ) { }
 
     async findAll(): Promise<providerEntity[]> {
-        return this.providerRepository.find();
+        const found = await this.providerRepository.find();
+        return found
     }
 
     async insertProvider(provider: providerEntity): Promise<providerEntity> {

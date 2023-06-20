@@ -3,8 +3,8 @@ import { ProviderService } from './provider.service';
 import { providerEntity } from 'src/entity/provider.Entity';
 import { providerDTO } from 'src/dto/provider.dto';
 import { Request, Response } from 'express'
-import { Roles } from 'src/entity/role.decorator';
-import { Role } from 'src/entity/role.enum';
+import { Roles } from 'src/role/role.decorator';
+import { Role } from 'src/role/role.enum';
 const excludedKey = ['provider_code', 'created_at']
 
 @Controller('provider')
@@ -31,9 +31,7 @@ export class ProviderController {
     @Get('/getAllProvider')
     async getAllProvider(@Req() req: Request, @Res() res: Response): Promise<void> {
         try {
-
-            const getRes = this.providerService.findAll();
-            
+            const getRes = await this.providerService.findAll();
             res.status(200).json(getRes)
 
         } catch (err) {
