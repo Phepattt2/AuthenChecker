@@ -3,8 +3,8 @@ import { PackageServiceService } from './package_service.service';
 import { packageServiceEntity } from 'src/entity/package_service.Entity';
 import { packageServiceDTO } from 'src/dto/package_service.dto';
 import { Response, Request } from 'express';
-import { type } from 'os';
-
+import { Role } from 'src/entity/role.enum';
+import { Roles } from 'src/entity/role.decorator';
 const excludedKey = ['service_id', 'package_id', 'created_at', 'updated_at'];
 const package_validity_unit_List = ['second', 'minute', 'hour', 'day', 'month', 'year'];
 const packageServiceAllow = [1, 2, 3];
@@ -16,19 +16,51 @@ export class PackageServiceController {
         private readonly packageServiceService: PackageServiceService
     ) { }
 
-    @Get('/getAllTransactionRunner')
-    async getAllTransaction(): Promise<packageServiceEntity[]> {
-        return await this.packageServiceService.findAll();
+    @Roles( Role.ADMIN ,Role.DEV , Role.EXEC , Role.USER )
+    @Get('/getSearch')
+    async getFindByEntity(@Req() req: Request, @Res() res: Response, @Body() packageServiceDTO: packageServiceDTO): Promise<void> {
+        try {
+            const initRes = await initer(excludedKey, packageServiceDTO);
+            initRes.service_id = packageServiceDTO.service_id;
+            initRes.package_id = packageServiceDTO.package_id;
+
+            const findResult = await this.packageServiceService.searchBy(initRes);
+            res.status(200).json(findResult);
+        } catch (e) {
+            console.log(e);
+            res.status(500).json({ Error: 'internal server error' });
+        }
+
     }
 
+
+    @Roles( Role.ADMIN ,Role.DEV , Role.EXEC )
+    @Get('/getAllTransactionRunner')
+    async getAllTransaction(@Req() req: Request, @Res() res: Response): Promise<void> {
+        try {
+            
+            const getRes = await this.packageServiceService.findAll();
+            
+            res.status(200).json(getRes)
+
+        } catch (err) {
+
+            console.log(err);
+
+            res.status(500).json({ error: 'Internal Server Error' })
+
+        }
+    }
+
+    @Roles( Role.ADMIN ,Role.DEV , Role.USER )
     @Post('/createProv')
     @HttpCode(HttpStatus.CREATED)
 
     async createPackageService(@Req() req: Request, @Res() res: Response, @Body() packageServiceDTO: packageServiceDTO): Promise<void> {
         try {
-            if ((packageServiceAllow.includes(Number(packageServiceDTO.package_type)) 
-            || packageServiceDTO.package_type == null )
-            && package_validity_unit_List.includes(packageServiceDTO.package_validity_unit)) {
+            if ((packageServiceAllow.includes(Number(packageServiceDTO.package_type))
+                || packageServiceDTO.package_type == null)
+                && package_validity_unit_List.includes(packageServiceDTO.package_validity_unit)) {
 
                 const initRes = await initer(excludedKey, packageServiceDTO);
 
@@ -56,12 +88,13 @@ export class PackageServiceController {
 
     }
 
+    @Roles( Role.ADMIN ,Role.DEV  )
     @Put('/updateById')
     async updateServiceById(@Req() req: Request, @Res() res: Response, @Body() packageServiceDTO: packageServiceDTO): Promise<void> {
         try {
-            if ((packageServiceAllow.includes(Number(packageServiceDTO.package_type)) 
-            || packageServiceDTO.package_type == null )
-            && package_validity_unit_List.includes(packageServiceDTO.package_validity_unit)) {
+            if ((packageServiceAllow.includes(Number(packageServiceDTO.package_type))
+                || packageServiceDTO.package_type == null)
+                && package_validity_unit_List.includes(packageServiceDTO.package_validity_unit)) {
                 const initRes = await initer(excludedKey, packageServiceDTO);
 
                 initRes.service_id = packageServiceDTO.service_id;
@@ -95,7 +128,7 @@ export class PackageServiceController {
 
         }
     }
-
+    @Roles( Role.ADMIN )
     @Delete('/deleteById')
     async deleteServiceById(@Req() req: Request, @Res() res: Response, @Body() packageServiceDTO: packageServiceDTO): Promise<void> {
         try {
@@ -114,22 +147,6 @@ export class PackageServiceController {
             res.status(500).json({ error: 'Internal Server Error' });
 
         }
-    }
-
-    @Get('/getSearch')
-    async getFindByEntity(@Req() req: Request, @Res() res: Response, @Body() packageServiceDTO: packageServiceDTO): Promise<void> {
-        try {
-            const initRes = await initer(excludedKey, packageServiceDTO);
-            initRes.service_id = packageServiceDTO.service_id;
-            initRes.package_id = packageServiceDTO.package_id;
-
-            const findResult = await this.packageServiceService.searchBy(initRes);
-            res.status(200).json(findResult);
-        } catch (e) {
-            console.log(e);
-            res.status(500).json({ Error: 'internal server error' });
-        }
-
     }
 
 

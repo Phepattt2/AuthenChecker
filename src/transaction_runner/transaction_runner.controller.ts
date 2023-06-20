@@ -5,6 +5,8 @@ import { transactionRunnerDTO } from 'src/dto/transaction_runner.dto';
 import { PrimaryGeneratedColumn } from 'typeorm';
 import { gen_ref_id } from 'src/generator/gen_ref_id';
 import { Request, Response } from 'express';
+import { Role } from 'src/entity/role.enum';
+import { Roles } from 'src/entity/role.decorator';
 
 const excludedKey = ["runner_key"]
 
@@ -14,7 +16,39 @@ export class TransactionRunnerController {
         private readonly transactionRunnerService: TransactionRunnerService
     ) { }
 
+    
+    @Roles(Role.ADMIN , Role.DEV , Role.EXEC , Role.USER)
+    @Get('/getSearch')
+    async getFindByEntity(@Req() req: Request, @Res() res: Response, @Body() transactionRunnerDTO: transactionRunnerDTO): Promise<void> {
+        try {
+            const initRes = await initer(excludedKey, transactionRunnerDTO);
+            initRes.runner_key = transactionRunnerDTO.runner_key;
 
+            const findResult = await this.transactionRunnerService.searchBy(initRes);
+            res.status(200).json(findResult);
+        } catch (e) {
+            console.log(e)
+            res.status(500).json({Error : 'Internal Server Error'});
+        }
+
+    }
+
+    @Roles(Role.ADMIN , Role.DEV , Role.EXEC , Role.USER)
+    @Get('/getAllTransactionRunner')
+    async getAllTransactionRunner(@Req() req: Request, @Res() res: Response): Promise<void> {
+        try {
+            const getRes = await this.transactionRunnerService.findAll();
+            res.status(200).json(getRes);
+        }
+        catch (e) {
+            console.log(e)
+            res.status(500).json({ error: 'Internal Server Error' })
+        }
+    }
+
+
+
+    @Roles(Role.ADMIN , Role.DEV , Role.USER)
     @Post("/createTransactionRunner")
     @HttpCode(HttpStatus.CREATED)
     async createTransactionRunner(@Req() req: Request, @Res() res: Response, @Body() newTransactionRunner: transactionRunnerDTO): Promise<void> {
@@ -37,18 +71,7 @@ export class TransactionRunnerController {
         }
     }
 
-    @Get('/getAllTransactionRunner')
-    async getAllTransactionRunner(@Req() req: Request, @Res() res: Response): Promise<void> {
-        try {
-            const getRes = await this.transactionRunnerService.findAll();
-            res.status(200).json(getRes);
-        }
-        catch (e) {
-            console.log(e)
-            res.status(500).json({ error: 'Internal Server Error' })
-        }
-    }
-
+    @Roles(Role.ADMIN , Role.DEV  )
     @Put("/updateById")
     async updateTransactionRunnerById(@Req() req: Request, @Res() res: Response, @Body() transactionRunner: transactionRunnerDTO): Promise<void> {
         try {
@@ -78,7 +101,7 @@ export class TransactionRunnerController {
 
         }
     }
-
+    @Roles(Role.ADMIN )
     @Delete("/deleteById")
     async deleteTransactionRunnerById(@Req() req: Request, @Res() res: Response, @Body() transactionRunnerDTO: transactionRunnerDTO): Promise<void> {
         try {
@@ -90,20 +113,6 @@ export class TransactionRunnerController {
         }
     }
 
-    @Get('/getSearch')
-    async getFindByEntity(@Req() req: Request, @Res() res: Response, @Body() transactionRunnerDTO: transactionRunnerDTO): Promise<void> {
-        try {
-            const initRes = await initer(excludedKey, transactionRunnerDTO);
-            initRes.runner_key = transactionRunnerDTO.runner_key;
-
-            const findResult = await this.transactionRunnerService.searchBy(initRes);
-            res.status(200).json(findResult);
-        } catch (e) {
-            console.log(e)
-            res.status(500).json({Error : 'Internal Server Error'});
-        }
-
-    }
 }
 
 async function initer(notIncludeList: string[], userInputDTO: transactionRunnerDTO): Promise<transactionRunnerEntity> {

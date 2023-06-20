@@ -15,7 +15,22 @@ const txn_statusAllow = [0,1,2,3]  ;
 export class TransactionController {
     constructor(private readonly transactionService: TransactionService) { }
 
-    @Roles(Role.EXEC , Role.ADMIN )
+    @Roles( Role.ADMIN , Role.DEV ,Role.EXEC ,Role.USER )
+    @Get('/getSearch')
+    async getFindByEntity(@Req() req: Request, @Res() res: Response , @Body() transactionDTO: transactionDTO ): Promise<void> {
+        try {
+            const initRes = await initer(excludedKey , transactionDTO) ;
+            initRes.ref_id = transactionDTO.ref_id ;
+    
+           const findResult = await  this.transactionService.searchBy(initRes) ;
+            res.status(200).json(findResult) ; 
+        }catch(e){
+            console.log(e) ; 
+            res.status(500).json({Error: 'Internal Server Error'})
+        }
+        
+    }
+    @Roles( Role.ADMIN , Role.DEV ,Role.EXEC )
     @Get('/getAllTransactions')
     async getAllTransaction(@Req() req: Request, @Res() res: Response): Promise<void> {
         try {
@@ -28,6 +43,7 @@ export class TransactionController {
 
     }
 
+    @Roles(Role.ADMIN , Role.DEV  ,Role.USER)
     @Post('/createTransaction')
     @HttpCode(HttpStatus.CREATED)
 
@@ -51,6 +67,7 @@ export class TransactionController {
 
     }
 
+    @Roles(Role.ADMIN ,Role.DEV)
     @Put("/updateById")
     async updateTransactionById(@Req() req: Request, @Res() res: Response, @Body() transaction: transactionDTO): Promise<void> {
         try {
@@ -81,6 +98,7 @@ export class TransactionController {
         }
     }
 
+    @Roles(Role.ADMIN )
     @Delete("/deleteById")
     async deleteTransactionById(@Req() req: Request, @Res() res: Response, @Body() transactionDTO: transactionDTO): Promise<void> {
         try {
@@ -92,21 +110,8 @@ export class TransactionController {
         }
 
     }
-
-    @Get('/getSearch')
-    async getFindByEntity(@Req() req: Request, @Res() res: Response , @Body() transactionDTO: transactionDTO ): Promise<void> {
-        try {
-            const initRes = await initer(excludedKey , transactionDTO) ;
-            initRes.ref_id = transactionDTO.ref_id ;
     
-           const findResult = await  this.transactionService.searchBy(initRes) ;
-            res.status(200).json(findResult) ; 
-        }catch(e){
-            console.log(e) ; 
-            res.status(500).json({Error: 'Internal Server Error'})
-        }
-        
-    }
+
 }
 
 

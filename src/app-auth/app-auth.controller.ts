@@ -6,8 +6,8 @@ import { randomUUID, randomBytes } from 'crypto';
 import { bytesToBase64 } from 'byte-base64';
 import { Response, Request } from 'express';
 
-
-
+import { Roles } from 'src/entity/role.decorator';
+import { Role } from 'src/entity/role.enum';
 // const value of this table  
 
 const excludedKey = ['app_id', 'app_secret', 'created_at', 'updated_at'];
@@ -19,6 +19,48 @@ const statusAllowList = [0, 1];
 export class AppAuthController {
     constructor(private readonly appAuthService: AppAuthService) { }
 
+    @Roles(Role.ADMIN , Role.DEV  , Role.EXEC , Role.USER)
+    @Get('/getSearch')
+    async getFindByEntity(@Req() req: Request, @Res() res: Response, @Body() appAuthDTO: AppAuthDTO): Promise<void> {
+        try {
+
+            const initRes = await initer(excludedKey, appAuthDTO);
+
+            initRes.app_id = appAuthDTO.app_id;
+
+            const findResult = await this.appAuthService.searchBy(initRes);
+
+            res.status(200).json(findResult);
+
+        } catch (e) {
+
+            console.log(e);
+
+            res.status(500).json({ Error: 'internal server error' });
+
+        }
+
+    }
+
+    @Roles(Role.ADMIN , Role.DEV , Role.EXEC )
+    @Get("/getAllAppAuth")
+    async getAllAppAuth(@Req() req: Request, @Res() res: Response): Promise<void> {
+
+        try {
+
+            const getRes = await this.appAuthService.findAll();
+            res.status(200).json(getRes);
+
+        } catch (e) {
+
+            console.log(e);
+
+            res.status(500).json({ Error: 'Internal Server Error' });
+
+        }
+    }
+    
+    @Roles(Role.ADMIN , Role.DEV , Role.USER)
     @Post("/createAppAuth")
     @HttpCode(HttpStatus.CREATED)
     async createAppAuth(@Req() req: Request, @Res() res: Response, @Body() newApp: AppAuthDTO): Promise<void> {
@@ -55,23 +97,8 @@ export class AppAuthController {
 
     }
 
-    @Get("/getAllAppAuth")
-    async getAllAppAuth(@Req() req: Request, @Res() res: Response): Promise<void> {
-
-        try {
-
-            const getRes = await this.appAuthService.findAll();
-            res.status(200).json(getRes);
-
-        } catch (e) {
-
-            console.log(e);
-
-            res.status(500).json({ Error: 'Internal Server Error' });
-
-        }
-    }
-
+    
+    @Roles(Role.ADMIN , Role.DEV )
     @Put("/updateById")
     async updateAuthById(@Req() req: Request, @Res() res: Response, @Body() appAuthDTO: AppAuthDTO): Promise<void> {
         try {
@@ -109,6 +136,7 @@ export class AppAuthController {
         }
     }
 
+    @Roles(Role.ADMIN )
     @Delete("/deleteById")
     async deleteAuthById(@Req() req: Request, @Res() res: Response, @Body() newApp: AppAuthDTO): Promise<void> {
 
@@ -132,28 +160,7 @@ export class AppAuthController {
 
 
     }
-
-    @Get('/getSearch')
-    async getFindByEntity(@Req() req: Request, @Res() res: Response, @Body() appAuthDTO: AppAuthDTO): Promise<void> {
-        try {
-
-            const initRes = await initer(excludedKey, appAuthDTO);
-
-            initRes.app_id = appAuthDTO.app_id;
-
-            const findResult = await this.appAuthService.searchBy(initRes);
-
-            res.status(200).json(findResult);
-
-        } catch (e) {
-
-            console.log(e);
-
-            res.status(500).json({ Error: 'internal server error' });
-
-        }
-
-    }
+ 
 
 }
 
