@@ -81,8 +81,8 @@ import { FirebaseModule } from './firebase/firebase.module';
 export class AppModule implements NestModule
 {
   configure(consumer: MiddlewareConsumer) {
-     consumer
-     .apply(AuthMiddleWare).forRoutes('*');
+    //  consumer
+    //  .apply(AuthMiddleWare).forRoutes('*');
     //  consumer
     //  .apply(firebaseAppCheckMiddleware).forRoutes('*');
 

@@ -5,9 +5,12 @@ import { Body, Controller, Get, HttpCode, HttpStatus, Post, Put, Delete, Req, Re
 import { appServiceMapDTO } from 'src/dto/app_service_map.dto';
 import { Role } from 'src/role/role.enum';
 import { Roles } from 'src/role/role.decorator';
-// fis this page then go recheck others 
+
+// constant values 
 
 const excludedKey = ['app_id', 'servicer_id', 'created_at'];
+
+
 @Controller('app-service-map')
 export class AppServiceMapController {
     constructor(
@@ -93,6 +96,9 @@ export class AppServiceMapController {
  
 
 }
+
+// parse DTO to ENTITY
+
 async function initer(notIncludeList: string[], userInputDTO: appServiceMapEntity): Promise<appServiceMapEntity> {
     const exportedObject = new appServiceMapEntity();
     for (var key in userInputDTO) {

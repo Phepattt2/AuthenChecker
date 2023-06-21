@@ -7,6 +7,9 @@ import { topUpServiceListDTO } from 'src/dto/topUpServiceList.dto';
 import { Role } from 'src/role/role.enum';
 import { Roles } from 'src/role/role.decorator';
 
+
+// constant values 
+
 const excludedKeys = ['service_id', 'topup_order', 'updated_at'];
 
 @Controller('topup-service')
@@ -83,7 +86,7 @@ export class TopupServiceController {
                 res.status(422).json({ Error: "Unprocessable Entity ( invalid data )" });
             }
             else if (insertRes == 'insert success but duplicate' || insertRes == 'insert success') {
-                res.status(200).json(insertRes);
+                res.status(200).json(`{"message":${insertRes}}`);
             }
 
 
@@ -168,6 +171,8 @@ export class TopupServiceController {
 
 
 }
+
+// parse DTO to ENTITY
 
 async function initer(notIncludeList: string[], userInputDTO: topUpServiceDTO): Promise<topUpServiceEntity> {
     const exportedObject = new topUpServiceEntity();

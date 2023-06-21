@@ -8,7 +8,8 @@ import { Response, Request } from 'express';
 
 import { Roles } from 'src/role/role.decorator';
 import { Role } from 'src/role/role.enum';
-// const value of this table  
+
+// constant values 
 
 const excludedKey = ['app_id', 'app_secret', 'created_at', 'updated_at'];
 
@@ -164,7 +165,7 @@ export class AppAuthController {
 
 }
 
-// DTO parser ! excluding some keys 
+// parse DTO to ENTITY
 
 async function initer(notIncludeList: string[], userInputDTO: app_auth): Promise<app_auth> {
 
