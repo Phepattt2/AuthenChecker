@@ -8,9 +8,9 @@ import { StringArraySupportOption } from 'prettier';
 @Entity('transaction')
 
 export class transactionEntity {
-    @PrimaryGeneratedColumn()
-    @PrimaryColumn({ length: 20, type: 'character varying', nullable: false , generated : true})
-    ref_id: string;
+
+    @Column({ type: 'varchar', length: 20, nullable: false, primary: true })
+ref_id: string;
 
     @ManyToOne(() => app_auth, { eager: true , cascade : true , onDelete : "CASCADE" })
     @JoinColumn({ name: 'app_id' })
