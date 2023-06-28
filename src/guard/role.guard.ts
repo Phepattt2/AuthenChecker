@@ -41,8 +41,6 @@ export class RolesGuard implements CanActivate {
         const queryResult = await collectionRef.where("email", "==", decryptData.email).limit(1).get();
         const userData = queryResult.docs[0].data();
 
-        console.log(userData.role , typeof(userData.role))
-        console.log("dr1",decryptData.role , typeof(decryptData.role) )
         // return false;
 
         if (userData) {

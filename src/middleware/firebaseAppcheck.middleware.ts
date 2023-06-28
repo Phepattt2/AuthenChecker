@@ -14,8 +14,9 @@ const data = JSON.parse(jsonData);
 
 export class firebaseAppCheckMiddleware implements NestMiddleware {
     // no test ! 
-
+    
     async use(req: Request, res: Response, next: NextFunction) {
+        console.log('header', req.headers)
         console.log(`headers firebase chacker ${req.header('X-Firebase-AppCheck')}`) ;
 
         try {
