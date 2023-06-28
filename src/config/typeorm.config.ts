@@ -11,12 +11,12 @@ import { transactionRunnerEntity } from "src/entity/transaction_runner.Entity";
 
 
 export const typrOrmConfig: TypeOrmModuleOptions = {
-        type: process.env.DB_TYPE as any,
-        host: process.env.PG_HOST,
-        port: parseInt(process.env.PG_PORT),
-        username: process.env.PG_USER,
-        password: process.env.PG_PASSWORD,
-        database: process.env.PG_DB,
+        type: 'postgres',
+        host: 'localhost',
+        port: 5432,
+        username: 'postgres',
+        password: 'Piito#1911',
+        database: 'test_local_db',
         entities: [
                 appServiceMapEntity,
                 app_auth,
