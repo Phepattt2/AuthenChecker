@@ -9,6 +9,7 @@ async function bootstrap() {
   // app.setGlobalPrefix("/portal/api");
   
   app.enableCors();
+  app.setGlobalPrefix("/portal/api")
   console.log('backend server opened at port 9000')
   await app.listen(9000);
 }
