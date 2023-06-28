@@ -1,4 +1,4 @@
-import { Controller, HttpCode, HttpStatus, Post, Body, Get, Req, Res, Put, Delete ,Inject} from '@nestjs/common';
+import { Controller, HttpCode, HttpStatus, Post, Body, Get, Req, Res, Put, Delete, Inject } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { serviceEntity } from 'src/entity/service.Entity';
 import { Admin, IntegerType, Repository } from 'typeorm';
@@ -13,6 +13,7 @@ import { RouterModule } from '@nestjs/core';
 import { Role } from 'src/role/role.enum';
 import { Roles } from 'src/role/role.decorator';
 import * as admin from 'firebase-admin'
+import axios from 'axios' ;
 
 const excludedKey = ['service_id', 'created_at', 'latest_fee_at']
 const serviceStatusAllowed = [0, 1];
@@ -21,10 +22,9 @@ const serviceTypeAllowed = [1, 2, 3, 4, 5, 6]
 
 @Controller('service')
 export class ServiceController {
-    constructor(private readonly serviceService: ServiceService , @Inject('FirebaseAdmin') private readonly firebaseAdmin: admin.app.App ) { }
-    
+    constructor(private readonly serviceService: ServiceService, @Inject('FirebaseAdmin') private readonly firebaseAdmin: admin.app.App) { }
 
-    @Roles(Role.ADMIN , Role.DEV , Role.EXEC , Role.USER)
+    @Roles(Role.ADMIN, Role.DEV, Role.EXEC, Role.USER)
     @Get('/getSearch')
     async getFindByEntity(@Req() req: Request, @Res() res: Response, @Body() serviceDTO: serviceDTO): Promise<void> {
         try {
@@ -41,7 +41,7 @@ export class ServiceController {
         }
     }
 
-    @Roles(Role.ADMIN , Role.DEV , Role.EXEC )
+    @Roles(Role.ADMIN, Role.DEV, Role.EXEC)
     @Get('/getAllService')
     async getAllService(@Req() req: Request, @Res() res: Response): Promise<void> {
         try {
@@ -61,7 +61,7 @@ export class ServiceController {
 
 
 
-    @Roles(Role.ADMIN , Role.DEV , Role.USER)
+    @Roles(Role.ADMIN, Role.DEV, Role.USER)
     @Post('/createService')
     @HttpCode(HttpStatus.CREATED)
     async createService(@Req() req: Request, @Res() res: Response, @Body() service: serviceDTO): Promise<void> {
@@ -102,7 +102,7 @@ export class ServiceController {
     }
 
 
-    @Roles(Role.ADMIN , Role.DEV )
+    @Roles(Role.ADMIN, Role.DEV)
     @Put('/updateById')
     async updateServiceById(@Req() req: Request, @Res() res: Response, @Body() service: serviceDTO): Promise<void> {
         try {
@@ -135,7 +135,7 @@ export class ServiceController {
         }
     }
 
-    @Roles(Role.ADMIN  )
+    @Roles(Role.ADMIN)
     @Delete('/deleteById')
     async deleteServiceById(@Req() req: Request, @Res() res: Response, @Body() service: serviceDTO): Promise<void> {
         try {
@@ -155,8 +155,8 @@ export class ServiceController {
 
 
 
-    
-    
+
+
 
     // //  -------------------------------------------------------------------------------------------------------- // 
 
@@ -183,6 +183,8 @@ export class ServiceController {
 
     //     }
     // }
+
+    // for admin ! 
 
     // @Post('/googleLoginUser')
     // async createUser(@Req() req: Request, @Res() res: Response, @Body() user: userDTO): Promise<void> {

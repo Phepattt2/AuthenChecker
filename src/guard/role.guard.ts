@@ -4,14 +4,15 @@ import { Role } from 'src/role/role.enum';
 import { Request, Response } from 'express';
 import * as admin from 'firebase-admin';
 import { type } from 'os';
+import axios from 'axios';
 
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-  constructor(private reflector: Reflector , @Inject('FirebaseAdmin') private readonly firebaseAdmin: admin.app.App) { 
+  constructor(private reflector: Reflector, @Inject('FirebaseAdmin') private readonly firebaseAdmin: admin.app.App) {
   }
 
-  async canActivate(context: ExecutionContext ): Promise<boolean> {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
 
     const requiredRoles = this.reflector.getAllAndOverride<Role[]>('roles', [
       context.getHandler(),
@@ -22,45 +23,58 @@ export class RolesGuard implements CanActivate {
       return true;
     }
 
-    const user: Request = context.switchToHttp().getRequest();
-
     // check AUTH token 
     try {
+
+      const collectionRef = await this.firebaseAdmin.firestore().collection("Users");
+      const user: Request = context.switchToHttp().getRequest();
       const tokenData = user.headers.authorization;
 
       if (tokenData.startsWith('Bearer')) {
-
         const token = tokenData.split(' ')[1];
 
-        try {
-          const decryptData = await admin.auth().verifyIdToken(token) ;
-          if(decryptData["role"]){
-            const userRoleList = decryptData["role"].split(',') ; 
-            console.log(requiredRoles.some((role) => userRoleList.includes(role)));
-            return requiredRoles.some((role) => userRoleList.includes(role));
-          }else {
-            return false ; 
+        // from token 
+        const decryptData = await admin.auth().verifyIdToken(token);
+        let decryptedRole = '';
+
+        // from firestore 
+        const queryResult = await collectionRef.where("email", "==", decryptData.email).limit(1).get();
+        const userData = queryResult.docs[0].data();
+
+        console.log(userData.role , typeof(userData.role))
+        console.log("dr1",decryptData.role , typeof(decryptData.role) )
+        // return false;
+
+        if (userData) {
+
+          decryptedRole = sortedStringListToString(decryptData.role);
+          const queryRole = sortedStringListToString(userData.role);
+      
+          if (!decryptedRole) {
+            await axios.post('https://addcustomclaim-pm74y43ghq-uc.a.run.app', { email: decryptData['email'], role: queryRole })
+            // console.log(queryRole);
+            decryptedRole = queryRole
+          }
+          console.log(decryptedRole , queryRole)
+
+          if (decryptedRole == queryRole) {
+
+            const listDecryptedRoleAsc = decryptedRole.split(',');
+            const accessControl = requiredRoles.some(role => listDecryptedRoleAsc.includes(role));
+
+            return accessControl
+
+          } else {
+
+            console.log("user's role does not match")
+            return false;
           }
 
-          // return admin.auth().verifyIdToken(token).then(async (res) => {
-          //   const fireStoreDB = this.firebaseAdmin.firestore();
-          //   const querySnapshot = await fireStoreDB.collection('Users').where("uid", "==", res.uid).limit(1).get();
+        } else {
 
-            
-
-          //   if (!querySnapshot.empty) {
-          //     const userData = querySnapshot.docs[0].data();
-
-          //     return requiredRoles.some((role) => userData.role?.includes(role))
-
-          //   } else {
-
-          //     return false;
-          //   }
-
-          // })
-        } catch (e) {
+          console.log("data doesn't exist in firestore ")
           return false;
+
         }
 
       }
@@ -72,4 +86,19 @@ export class RolesGuard implements CanActivate {
   }
 
 }
+
+
+export function sortedStringListToString(text: string): string {
+
+  // example <ascending a to z >: "['user','admin','executive']" -> "['admin','executive','user']" 
+  //  use on role data that 
+  try {
+    const listAsc = ((text.replace(/[\[\]]/g, '')).split(',')).sort((one, two) => (one > two ? 1 : -1))
+    const textAsc = listAsc.join(',');
+    return textAsc
+  } catch {
+    return null;
+  }
+}
+
 

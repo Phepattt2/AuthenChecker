@@ -16,7 +16,7 @@ export class firebaseAppCheckMiddleware implements NestMiddleware {
     // no test ! 
 
     async use(req: Request, res: Response, next: NextFunction) {
-        // console.log(`headers firebase chacker ${req.header('X-Firebase-AppCheck')}`) ;
+        console.log(`headers firebase chacker ${req.header('X-Firebase-AppCheck')}`) ;
 
         try {
             const appCheckToken = req.header('X-Firebase-AppCheck');
@@ -43,7 +43,7 @@ async function checkReCaptchaToken(appCheckToken: string): Promise<string> {
 
     const response = await axios.post('https://www.google.com/recaptcha/api/siteverify', null, {
         params: {
-            secret: '6LdGxnYmAAAAADwgklIiNN9CDXDcp36FpLRo0pPW',
+            secret: '6LdOTNImAAAAAAI_nduKMgS66zVs-UpQpllU1_Bl',
             response: appCheckToken,
         },
     });
