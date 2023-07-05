@@ -1,7 +1,9 @@
-FROM node:18 
+FROM node:18-slim
 WORKDIR /app
 COPY package*.json ./
+COPY tsconfig*.json ./
 RUN npm install
+COPY . .
 RUN npm run build 
-EXPOSE 9000
+EXPOSE 2122
 CMD [ "npm" , "run", "start" ]
